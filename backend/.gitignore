@@ -1,0 +1,4 @@
+node_modules
+public/dist
+publi/images
+.env
