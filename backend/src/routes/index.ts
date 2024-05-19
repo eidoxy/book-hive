@@ -1,10 +1,11 @@
 import { Router } from 'express';
 
-import cateogryRoutes from './category';
 import adminRoutes from './admin';
+import cateogryRoutes from './category';
+import authorRoutes from './author';
 
 const router = Router();
 
-router.use(cateogryRoutes).use(adminRoutes);
+router.use(adminRoutes).use(cateogryRoutes).use(authorRoutes);
 
 export default router;

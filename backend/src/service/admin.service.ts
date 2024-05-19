@@ -3,6 +3,7 @@ import { Admin, AdminQueryResult } from '../models/admin.model';
 import bcrypt, { compare, hash } from 'bcrypt';
 
 import getConnection from '../database';
+import { ResultSetHeader } from 'mysql2';
 import { createToken } from '../utils/token';
 
 export async function createAdmin(bodyRequest: Admin) {
@@ -191,12 +192,12 @@ export async function updateAdmin(id: number, bodyRequest: Admin) {
   const connection = await getConnection();
 
   if (connection) {
-    // ? : check if the admin exists
     const [rows] = await connection.query<AdminQueryResult[]>(
       'SELECT * FROM admins WHERE id = ?',
       [id]
     );
 
+    // ? : check if the admin exists
     if (rows.length === 0) {
       return {
         status: 404,
@@ -249,12 +250,12 @@ export async function deleteAdmin(id: number) {
   const connection = await getConnection();
 
   if (connection) {
-    // ? : check if the admin exists
     const [rows] = await connection.query<AdminQueryResult[]>(
       'SELECT * FROM admins WHERE id = ?',
       [id]
     );
 
+    // ? : check if the admin exists
     if (rows.length === 0) {
       return {
         status: 404,
@@ -262,26 +263,23 @@ export async function deleteAdmin(id: number) {
       };
     }
 
-    const [rowsDelete] = await connection.query<AdminQueryResult[]>(
+    const [result] = await connection.query<ResultSetHeader>(
       'DELETE FROM admins WHERE id = ?',
       [id]
     );
 
     // ? : check if the admin is deleted
-    if (rowsDelete.length === 0) {
+    if (result.affectedRows) {
       return {
         status: 500,
         message: 'Failed to delete admin',
       };
     }
 
-    // ! : return the admin
+    // ! : return the deleted admin
     return {
       status: 200,
-      message: 'Admin deleted',
-      payload: {
-        id: id,
-      },
+      message: `Admin with id ${id} deleted!`,
     };
   }
 }
