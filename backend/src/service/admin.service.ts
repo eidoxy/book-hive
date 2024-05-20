@@ -6,82 +6,6 @@ import getConnection from '../database';
 import { ResultSetHeader } from 'mysql2';
 import { createToken } from '../utils/token';
 
-export async function createAdmin(bodyRequest: Admin) {
-  const connection = await getConnection();
-
-  if (connection) {
-    // ? check if the email already exists
-    const [rowsEmail] = await connection.query<AdminQueryResult[]>(
-      'SELECT * FROM admins WHERE email = ?',
-      [bodyRequest.email]
-    );
-    if (rowsEmail.length > 0) {
-      return {
-        status: 409,
-        message: `Admin with email ${bodyRequest.email} already exists`,
-      };
-    }
-
-    // ? check if the phone number already exists
-    const [rowsPhone] = await connection.query<AdminQueryResult[]>(
-      'SELECT * FROM admins WHERE phone = ?',
-      [bodyRequest.phone]
-    );
-    if (rowsPhone.length > 0) {
-      return {
-        status: 409,
-        message: `Admin with phone number ${bodyRequest.phone} already exists`,
-      };
-    }
-
-    // ! : hash the password
-    const hashedPassword = await bcrypt.hash(
-      bodyRequest.password,
-      10
-    );
-    bodyRequest.password = hashedPassword;
-
-    const [rows] = await connection.query<AdminQueryResult[]>(
-      'INSERT INTO admins (name, email, password, phone) VALUES (?, ?, ?, ?)',
-      [
-        bodyRequest.name,
-        bodyRequest.email,
-        bodyRequest.password,
-        bodyRequest.phone,
-      ]
-    );
-
-    // ? : check if the admin is created
-    if (rows.length === 0) {
-      return {
-        status: 500,
-        message: 'Failed to create admin',
-      };
-    }
-
-    // ! : create a token
-    const token = createToken({
-      id: bodyRequest.id,
-      name: bodyRequest.name,
-      email: bodyRequest.email,
-    });
-
-    // ! : return the admin
-    return {
-      status: 201,
-      message: 'Admin created',
-      payload: {
-        id: bodyRequest.id,
-        name: bodyRequest.name,
-        email: bodyRequest.email,
-        password: bodyRequest.password,
-        phone: bodyRequest.phone,
-        token,
-      },
-    };
-  }
-}
-
 export async function loginAdmin(bodyRequest: Admin) {
   const connection = await getConnection();
 
@@ -91,11 +15,11 @@ export async function loginAdmin(bodyRequest: Admin) {
       [bodyRequest.email]
     );
 
-    // ? : check if the admin is found
-    if (rows.length === 0) {
+    // ? : check if admin with email already exists
+    if (rows.length > 0) {
       return {
-        status: 404,
-        message: `Admin ${bodyRequest.email}  not found`,
+        status: 409,
+        message: `Email ${bodyRequest.email} already exists!`,
       };
     }
 
@@ -125,13 +49,15 @@ export async function loginAdmin(bodyRequest: Admin) {
       status: 200,
       message: 'Login successful',
       payload: {
+        name: admin.name,
+        email: admin.email,
         token: token,
       },
     };
   }
 }
 
-export async function getAllAdmins() {
+export async function getAdmins() {
   const connection = await getConnection();
 
   if (connection) {
@@ -147,10 +73,10 @@ export async function getAllAdmins() {
       };
     }
 
-    // ! : return the admins
+    // ! : return the fetched admins
     return {
       status: 200,
-      message: 'Admins found',
+      message: 'Admins fetched successfully!',
       data: rows,
     };
   }
@@ -169,21 +95,92 @@ export async function getAdminById(id: number) {
     if (rows.length === 0) {
       return {
         status: 404,
-        message: `Admin ${id} not found`,
+        message: `Admin with id ${id} not found`,
       };
     }
 
-    const admin = rows[0];
+    // ! : return the fetched admin
+    return {
+      status: 200,
+      message: 'Admin fetched successfully!',
+      payload: rows[0],
+    };
+  }
+}
+
+export async function createAdmin(bodyRequest: Admin) {
+  const connection = await getConnection();
+
+  if (connection) {
+    const [rowsEmail] = await connection.query<AdminQueryResult[]>(
+      'SELECT * FROM admins WHERE email = ?',
+      [bodyRequest.email]
+    );
+
+    // ? check if the email already exists
+    if (rowsEmail.length > 0) {
+      return {
+        status: 409,
+        message: `Admin with email ${bodyRequest.email} already exists`,
+      };
+    }
+
+    const [rowsPhone] = await connection.query<AdminQueryResult[]>(
+      'SELECT * FROM admins WHERE phone = ?',
+      [bodyRequest.phone]
+    );
+
+    // ? check if the phone number already exists
+    if (rowsPhone.length > 0) {
+      return {
+        status: 409,
+        message: `Admin with phone number ${bodyRequest.phone} already exists`,
+      };
+    }
+
+    // ! : hash the password
+    const hashedPassword = await bcrypt.hash(
+      bodyRequest.password,
+      10
+    );
+    bodyRequest.password = hashedPassword;
+
+    const [result] = await connection.query<ResultSetHeader>(
+      'INSERT INTO admins (name, email, password, phone) VALUES (?, ?, ?, ?)',
+      [
+        bodyRequest.name,
+        bodyRequest.email,
+        bodyRequest.password,
+        bodyRequest.phone,
+      ]
+    );
+
+    // ? : check if the result is empty
+    if (result.affectedRows === 0) {
+      return {
+        status: 500,
+        message: 'Failed to create admin',
+      };
+    }
+
+    // ! : create a token
+    const token = createToken({
+      id: bodyRequest.id,
+      name: bodyRequest.name,
+      email: bodyRequest.email,
+    });
 
     // ! : return the admin
     return {
-      status: 200,
-      message: 'Admin found',
+      status: 201,
+      message: 'Admin created successfully!',
       payload: {
-        id: admin.id,
-        name: admin.name,
-        email: admin.email,
-        phone: admin.phone,
+        id: bodyRequest.id,
+        name: bodyRequest.name,
+        email: bodyRequest.email,
+        password: bodyRequest.password,
+        phone: bodyRequest.phone,
+        token,
       },
     };
   }
@@ -198,11 +195,11 @@ export async function updateAdmin(id: number, bodyRequest: Admin) {
       [id]
     );
 
-    // ? : check if the admin exists
+    // ? : check if there is no admin with the id
     if (rows.length === 0) {
       return {
         status: 404,
-        message: `Admin ${id} not found`,
+        message: `Admin with id ${id} not found`,
       };
     }
 
@@ -213,7 +210,7 @@ export async function updateAdmin(id: number, bodyRequest: Admin) {
     );
     bodyRequest.password = hashedPassword;
 
-    const [rowsUpdate] = await connection.query<AdminQueryResult[]>(
+    const [result] = await connection.query<ResultSetHeader>(
       'UPDATE admins SET name = ?, email = ?, password = ?, phone = ? WHERE id = ?',
       [
         bodyRequest.name,
@@ -224,18 +221,10 @@ export async function updateAdmin(id: number, bodyRequest: Admin) {
       ]
     );
 
-    // ? : check if the admin is updated
-    if (rowsUpdate.length === 0) {
-      return {
-        status: 500,
-        message: 'Failed to update admin',
-      };
-    }
-
-    // ! : return the admin
+    // ! : return the updated admin
     return {
       status: 200,
-      message: 'Admin updated',
+      message: 'Admin updated successfully!',
       payload: {
         id: id,
         name: bodyRequest.name,
@@ -256,11 +245,11 @@ export async function deleteAdmin(id: number) {
       [id]
     );
 
-    // ? : check if the admin exists
+    // ? : check if there is no admin with the id
     if (rows.length === 0) {
       return {
         status: 404,
-        message: `Admin ${id} not found`,
+        message: `Admin with id ${id} not found`,
       };
     }
 
@@ -272,7 +261,7 @@ export async function deleteAdmin(id: number) {
     // ! : return the deleted admin
     return {
       status: 200,
-      message: `Admin with id ${id} deleted!`,
+      message: `Admin with id ${id} deleted successfully!`,
     };
   }
 }

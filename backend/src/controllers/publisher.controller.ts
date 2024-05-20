@@ -18,7 +18,7 @@ export async function getPublishersController(
     const publishers = await getPublishers();
 
     if (publishers) {
-      return res.status(publishers.statusCode).send(publishers);
+      return res.status(publishers.status).send(publishers);
     }
   } catch (error) {
     console.error(
@@ -38,7 +38,7 @@ export async function getPublisherByIdController(
     const publisher = await getPublisherById(id);
 
     if (publisher) {
-      return res.status(publisher.statusCode).send(publisher);
+      return res.status(publisher.status).send(publisher);
     }
   } catch (error) {
     console.error(
@@ -58,7 +58,7 @@ export async function createPublisherController(
     const publisher = await createPublisher(bodyRequest);
 
     if (publisher) {
-      return res.status(publisher.statusCode).send(publisher);
+      return res.status(publisher.status).send(publisher);
     }
   } catch (error) {
     console.error(
@@ -79,7 +79,7 @@ export async function updatePublisherController(
     const publisher = await updatePublisher(id, bodyRequest);
 
     if (publisher) {
-      return res.status(publisher.statusCode).send(publisher);
+      return res.status(publisher.status).send(publisher);
     }
   } catch (error) {
     console.error(
@@ -99,7 +99,7 @@ export async function deletePublisherController(
     const publisher = await deletePublisher(id);
 
     if (publisher) {
-      return res.status(publisher.statusCode).send(publisher);
+      return res.status(publisher.status).send(publisher);
     }
   } catch (error) {
     console.error(

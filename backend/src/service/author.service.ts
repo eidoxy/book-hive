@@ -5,15 +5,23 @@ import { ResultSetHeader } from 'mysql2';
 
 export async function getAuthors() {
   const connection = await getConnection();
+
   if (connection) {
-    // ? : fetch all authors
     const [rows] = await connection.query<AuthorQueryResult[]>(
       'SELECT * FROM authors'
     );
 
-    // ! : return the authors
+    // ? : check if there are no authors
+    if (rows.length === 0) {
+      return {
+        status: 404,
+        message: 'No authors found',
+      };
+    }
+
+    // ! : return the fetched authors
     return {
-      statusCode: 200,
+      status: 200,
       message: 'Authors fetched successfully!',
       payload: rows,
     };
@@ -22,8 +30,8 @@ export async function getAuthors() {
 
 export async function getAuthorById(id: number) {
   const connection = await getConnection();
+
   if (connection) {
-    // ? : fetch author by id
     const [rows] = await connection.query<AuthorQueryResult[]>(
       'SELECT * FROM authors WHERE id = ?',
       [id]
@@ -32,14 +40,14 @@ export async function getAuthorById(id: number) {
     // ? : check if the author is found
     if (rows.length === 0) {
       return {
-        statusCode: 404,
+        status: 404,
         message: `Author with id ${id} not found`,
       };
     }
 
-    // ! : return the authors
+    // ! : return the fetched authors
     return {
-      statusCode: 200,
+      status: 200,
       message: 'Author fetched successfully!',
       payload: rows[0],
     };
@@ -48,16 +56,24 @@ export async function getAuthorById(id: number) {
 
 export async function createAuthor(bodyRequest: Author) {
   const connection = await getConnection();
+
   if (connection) {
-    // ? : create author
-    const [result] = await connection.query<AuthorQueryResult[]>(
+    const [result] = await connection.query<ResultSetHeader>(
       'INSERT INTO authors (name, description) VALUES (?, ?)',
       [bodyRequest.name, bodyRequest.description]
     );
 
+    // ? : check if the result is empty
+    if (result.affectedRows === 0) {
+      return {
+        status: 500,
+        message: 'Failed to create author',
+      };
+    }
+
     // ! : return the created author
     return {
-      statusCode: 201,
+      status: 201,
       message: 'Author created successfully!',
       payload: {
         id: bodyRequest.id,
@@ -77,23 +93,22 @@ export async function updateAuthor(id: number, bodyRequest: Author) {
       [id]
     );
 
-    // ? : check if the author is found
+    // ? : check if there is no author with the id
     if (rows.length === 0) {
       return {
-        statusCode: 404,
+        status: 404,
         message: `Author with id ${id} not found`,
       };
     }
 
-    // ? : update author
-    const [result] = await connection.query<AuthorQueryResult[]>(
+    const [result] = await connection.query<ResultSetHeader>(
       'UPDATE authors SET name = ?, description = ? WHERE id = ?',
       [bodyRequest.name, bodyRequest.description, id]
     );
 
     // ! : return the updated author
     return {
-      statusCode: 200,
+      status: 200,
       message: 'Author updated successfully!',
       payload: {
         id,
@@ -113,10 +128,10 @@ export async function deleteAuthor(id: number) {
       [id]
     );
 
-    // ? : check if the author is found
+    // ? : check if there is no author with the id
     if (rows.length === 0) {
       return {
-        statusCode: 404,
+        status: 404,
         message: `Author with id ${id} not found`,
       };
     }
@@ -128,7 +143,7 @@ export async function deleteAuthor(id: number) {
 
     // ! : return the deleted author
     return {
-      statusCode: 200,
+      status: 200,
       message: `Author deleted with id ${id} successfully!`,
     };
   }

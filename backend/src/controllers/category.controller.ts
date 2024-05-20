@@ -18,7 +18,7 @@ export async function getCategoriesController(
     const categories = await getCategories();
 
     if (categories) {
-      return res.status(categories.statusCode).send(categories);
+      return res.status(categories.status).send(categories);
     }
   } catch (error) {
     console.error(
@@ -38,7 +38,7 @@ export async function getCategoryByIdController(
     const category = await getCategoryById(id);
 
     if (category) {
-      return res.status(category.statusCode).send(category);
+      return res.status(category.status).send(category);
     }
   } catch (error) {
     console.error(
@@ -58,7 +58,7 @@ export async function createCategoryController(
     const category = await createCategory(bodyRequest);
 
     if (category) {
-      return res.status(category.statusCode).send(category);
+      return res.status(category.status).send(category);
     }
   } catch (error) {
     console.error(
@@ -79,7 +79,7 @@ export async function updateCategoryController(
     const category = await updateCategory(id, bodyRequest);
 
     if (category) {
-      return res.status(category.statusCode).send(category);
+      return res.status(category.status).send(category);
     }
   } catch (error) {
     console.error(
@@ -99,7 +99,7 @@ export async function deleteCategoryController(
     const category = await deleteCategory(id);
 
     if (category) {
-      return res.status(category.statusCode).send(category);
+      return res.status(category.status).send(category);
     }
   } catch (error) {
     console.error(

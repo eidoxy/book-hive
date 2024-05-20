@@ -14,9 +14,17 @@ export async function getPublishers() {
       'SELECT * FROM publishers'
     );
 
+    // ? : check if there are no publishers
+    if (rows.length === 0) {
+      return {
+        status: 404,
+        message: 'No publishers found',
+      };
+    }
+
     // ! : return the fetched publisher
     return {
-      statusCode: 200,
+      status: 200,
       message: 'Publisher fetched successfully!',
       payload: rows,
     };
@@ -35,14 +43,14 @@ export async function getPublisherById(id: number) {
     // ? : check if the publisher is found
     if (rows.length === 0) {
       return {
-        statusCode: 404,
+        status: 404,
         message: `Publisher with id ${id} not found`,
       };
     }
 
-    // ! : return the fetched category
+    // ! : return the fetched publisher
     return {
-      statusCode: 200,
+      status: 200,
       message: 'Publisher fetched successfully!',
       payload: rows[0],
     };
@@ -58,9 +66,17 @@ export async function createPublisher(bodyRequest: Publisher) {
       bodyRequest.name
     );
 
+    // ? : check if the result is empty
+    if (result.affectedRows === 0) {
+      return {
+        status: 500,
+        message: 'Failed to create publisher',
+      };
+    }
+
     // ! : return the created publisher
     return {
-      statusCode: 201,
+      status: 201,
       message: 'Publisher created successfully!',
       payload: {
         id: bodyRequest.id,
@@ -85,7 +101,7 @@ export async function updatePublisher(
     // ? : check if there is no publisher with the id
     if (rows.length === 0) {
       return {
-        statusCode: 404,
+        status: 404,
         message: `Publisher with id ${id} not found`,
       };
     }
@@ -95,17 +111,9 @@ export async function updatePublisher(
       [bodyRequest.name, id]
     );
 
-    // ? : check if the result is empty
-    if (result.affectedRows === 0) {
-      return {
-        statusCode: 500,
-        message: 'Failed to update publisher',
-      };
-    }
-
     // ! : return the updated publisher
     return {
-      statusCode: 200,
+      status: 200,
       message: 'Publisher updated successfully!',
       payload: {
         id,
@@ -127,7 +135,7 @@ export async function deletePublisher(id: number) {
     // ? : check if there is no publisher with the id
     if (rows.length === 0) {
       return {
-        statusCode: 404,
+        status: 404,
         message: `Publisher with id ${id} not found`,
       };
     }
@@ -137,17 +145,9 @@ export async function deletePublisher(id: number) {
       [id]
     );
 
-    // ? : check if the result is empty
-    if (result.affectedRows === 0) {
-      return {
-        statusCode: 500,
-        message: 'Failed to delete publisher',
-      };
-    }
-
     // ! : return the deleted publisher
     return {
-      statusCode: 200,
+      status: 200,
       message: `Publisher with id ${id} deleted successfully!`,
     };
   }

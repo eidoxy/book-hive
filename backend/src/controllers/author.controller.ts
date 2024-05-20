@@ -18,7 +18,7 @@ export async function getAuthorsController(
     const authors = await getAuthors();
 
     if (authors) {
-      return res.status(authors.statusCode).send(authors);
+      return res.status(authors.status).send(authors);
     }
   } catch (error) {
     console.error(
@@ -38,7 +38,7 @@ export async function getAuthorByIdController(
     const author = await getAuthorById(id);
 
     if (author) {
-      return res.status(author.statusCode).send(author);
+      return res.status(author.status).send(author);
     }
   } catch (error) {
     console.error(
@@ -58,7 +58,7 @@ export async function createAuthorController(
     const author = await createAuthor(bodyRequest);
 
     if (author) {
-      return res.status(author.statusCode).send(author);
+      return res.status(author.status).send(author);
     }
   } catch (error) {
     console.error(
@@ -79,7 +79,7 @@ export async function updateAuthorController(
     const author = await updateAuthor(id, bodyRequest);
 
     if (author) {
-      return res.status(author.statusCode).send(author);
+      return res.status(author.status).send(author);
     }
   } catch (error) {
     console.error(
@@ -99,7 +99,7 @@ export async function deleteAuthorController(
     const author = await deleteAuthor(id);
 
     if (author) {
-      return res.status(author.statusCode).send(author);
+      return res.status(author.status).send(author);
     }
   } catch (error) {
     console.error(

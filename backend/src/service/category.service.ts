@@ -13,9 +13,17 @@ export async function getCategories() {
       'SELECT * FROM categories'
     );
 
+    // ? : check if there are no categories
+    if (rows.length === 0) {
+      return {
+        status: 404,
+        message: 'No categories found',
+      };
+    }
+
     // ! : return the fetched categories
     return {
-      statusCode: 200,
+      status: 200,
       massage: 'Caegoires fetched successfully!',
       payload: rows,
     };
@@ -33,14 +41,14 @@ export async function getCategoryById(id: number) {
     // ? : check if the category is found
     if (rows.length === 0) {
       return {
-        statusCode: 404,
+        status: 404,
         message: `Category with id ${id} not found`,
       };
     }
 
     // ! : return the fetched category
     return {
-      statusCode: 200,
+      status: 200,
       message: 'Category fetched successfully!',
       payload: rows[0],
     };
@@ -50,14 +58,22 @@ export async function getCategoryById(id: number) {
 export async function createCategory(bodyRequest: Category) {
   const connection = await getConnection();
   if (connection) {
-    const [result] = await connection.query<CategoryQueryResult[]>(
+    const [result] = await connection.query<ResultSetHeader>(
       'INSERT INTO categories (name) VALUES (?)',
       bodyRequest.name
     );
 
+    // ? : check if the result is empty
+    if (result.affectedRows === 0) {
+      return {
+        status: 500,
+        message: 'Failed to create category',
+      };
+    }
+
     // ! : return the created category
     return {
-      statusCode: 201,
+      status: 201,
       message: 'Category created successfully!',
       payload: {
         id: bodyRequest.id,
@@ -82,7 +98,7 @@ export async function updateCategory(
     // ? : check if there is no category with the id
     if (rows.length === 0) {
       return {
-        statusCode: 404,
+        status: 404,
         message: `Category with id ${id} not found`,
       };
     }
@@ -92,17 +108,9 @@ export async function updateCategory(
       [bodyRequest.name, id]
     );
 
-    // ? : check if the result is empty
-    if (result.affectedRows === 0) {
-      return {
-        statusCode: 500,
-        message: 'Failed to update category',
-      };
-    }
-
     // ! : return the updated category
     return {
-      statusCode: 200,
+      status: 200,
       message: 'Category updated successfully!',
       payload: {
         id,
@@ -121,10 +129,10 @@ export async function deleteCategory(id: number) {
       [id]
     );
 
-    // ? : check if the category exists
+    // ? : check if there is no category with the id
     if (rows.length === 0) {
       return {
-        statusCode: 404,
+        status: 404,
         message: `Category with id ${id} not found`,
       };
     }
@@ -136,7 +144,7 @@ export async function deleteCategory(id: number) {
 
     // ! : return the deleted category
     return {
-      statusCode: 200,
+      status: 200,
       message: `Category with id ${id} deleted successfully!`,
     };
   }

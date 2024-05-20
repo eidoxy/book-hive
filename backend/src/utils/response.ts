@@ -1,6 +1,6 @@
-export const response = (statusCode: number, body: any) => {
+export const response = (status: number, body: any) => {
   return {
-    statusCode,
+    status,
     body: JSON.stringify(body),
   };
 };

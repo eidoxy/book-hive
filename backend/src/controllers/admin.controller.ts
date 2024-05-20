@@ -4,7 +4,7 @@ import { Admin } from '../models/admin.model';
 import {
   createAdmin,
   loginAdmin,
-  getAllAdmins,
+  getAdmins,
   getAdminById,
   updateAdmin,
   deleteAdmin,
@@ -28,12 +28,12 @@ export async function createAdminController(
   }
 }
 
-export async function getAllAdminsController(
+export async function getAdminsController(
   req: Request,
   res: Response
 ) {
   try {
-    const admins = await getAllAdmins();
+    const admins = await getAdmins();
 
     if (admins) {
       return res.status(200).send(admins);

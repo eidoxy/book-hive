@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import {
   createAdminController,
-  getAllAdminsController,
+  getAdminsController,
   getAdminByIdController,
   updateAdminController,
   deleteAdminController,
@@ -11,7 +11,7 @@ import {
 const adminRoutes = Router();
 
 adminRoutes
-  .get('/api/admin', getAllAdminsController)
+  .get('/api/admin', getAdminsController)
   .get('/api/admin/:id', getAdminByIdController)
   .post('/api/admin/create', createAdminController)
   .put('/api/admin/update/:id', updateAdminController)
