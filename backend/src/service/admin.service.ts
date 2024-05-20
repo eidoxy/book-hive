@@ -183,6 +183,7 @@ export async function getAdminById(id: number) {
         id: admin.id,
         name: admin.name,
         email: admin.email,
+        phone: admin.phone,
       },
     };
   }
@@ -267,14 +268,6 @@ export async function deleteAdmin(id: number) {
       'DELETE FROM admins WHERE id = ?',
       [id]
     );
-
-    // ? : check if the admin is deleted
-    if (result.affectedRows) {
-      return {
-        status: 500,
-        message: 'Failed to delete admin',
-      };
-    }
 
     // ! : return the deleted admin
     return {

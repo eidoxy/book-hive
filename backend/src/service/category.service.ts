@@ -13,6 +13,7 @@ export async function getCategories() {
       'SELECT * FROM categories'
     );
 
+    // ! : return the fetched categories
     return {
       statusCode: 200,
       massage: 'Caegoires fetched successfully!',
@@ -37,6 +38,7 @@ export async function getCategoryById(id: number) {
       };
     }
 
+    // ! : return the fetched category
     return {
       statusCode: 200,
       message: 'Category fetched successfully!',
@@ -77,21 +79,21 @@ export async function updateCategory(
       [id]
     );
 
-    // ? : check if the category exists
+    // ? : check if there is no category with the id
     if (rows.length === 0) {
       return {
         statusCode: 404,
-        message: `Category ${id} not found`,
+        message: `Category with id ${id} not found`,
       };
     }
 
-    const [result] = await connection.query<CategoryQueryResult[]>(
+    const [result] = await connection.query<ResultSetHeader>(
       'UPDATE categories SET name = ? WHERE id = ?',
       [bodyRequest.name, id]
     );
 
-    // ? : check if the category is updated
-    if (result.length === 0) {
+    // ? : check if the result is empty
+    if (result.affectedRows === 0) {
       return {
         statusCode: 500,
         message: 'Failed to update category',
@@ -123,7 +125,7 @@ export async function deleteCategory(id: number) {
     if (rows.length === 0) {
       return {
         statusCode: 404,
-        message: `Category ${id} not found`,
+        message: `Category with id ${id} not found`,
       };
     }
 
@@ -131,14 +133,6 @@ export async function deleteCategory(id: number) {
       'DELETE FROM categories WHERE id = ?',
       [id]
     );
-
-    // ? : check if the category is deleted
-    if (result.affectedRows) {
-      return {
-        statusCode: 500,
-        message: 'Failed to delete category',
-      };
-    }
 
     // ! : return the deleted category
     return {

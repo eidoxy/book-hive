@@ -126,14 +126,6 @@ export async function deleteAuthor(id: number) {
       [id]
     );
 
-    // ? : check if the author is deleted
-    if (!result.affectedRows) {
-      return {
-        statusCode: 500,
-        message: 'Failed to delete author',
-      };
-    }
-
     // ! : return the deleted author
     return {
       statusCode: 200,

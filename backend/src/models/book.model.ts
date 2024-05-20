@@ -6,7 +6,7 @@ export interface Book {
   cover: string;
   description: string;
   categories_id: number;
-  shelfs_id: number;
+  shelves_id: number;
   total_pages: number;
 }
 
@@ -16,6 +16,6 @@ export interface BookQueryResult extends RowDataPacket {
   cover: string;
   description: string;
   categories_id: number;
-  shelfs_id: number;
+  shelves_id: number;
   total_pages: number;
 }
