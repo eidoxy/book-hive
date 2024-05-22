@@ -11,7 +11,7 @@ const data = {
   phone: '123457890',
 };
 
-const seedAdmins = async () => {
+export default async function seedAdmins() {
   try {
     const connection = await getConnection();
 
@@ -40,6 +40,4 @@ const seedAdmins = async () => {
   } catch (error) {
     console.error('Error seeding admins:', error);
   }
-};
-
-seedAdmins();
+}

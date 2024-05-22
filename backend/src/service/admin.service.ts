@@ -30,6 +30,7 @@ export async function loginAdmin(bodyRequest: Admin) {
       admin.password
     );
 
+    // ? : check if the password is incorrect
     if (!isPassowrdValid) {
       return {
         status: 401,
@@ -51,6 +52,7 @@ export async function loginAdmin(bodyRequest: Admin) {
       payload: {
         name: admin.name,
         email: admin.email,
+        phone: admin.phone,
         token: token,
       },
     };
