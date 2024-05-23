@@ -123,29 +123,42 @@ export async function updateCategory(
 export async function deleteCategory(id: number) {
   const connection = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<CategoryQueryResult[]>(
-      'SELECT * FROM categories WHERE id = ?',
-      [id]
-    );
+  try {
+    if (connection) {
+      const [rows] = await connection.query<CategoryQueryResult[]>(
+        'SELECT * FROM categories WHERE id = ?',
+        [id]
+      );
 
-    // ? : check if there is no category with the id
-    if (rows.length === 0) {
+      // ? : check if there is no category with the id
+      if (rows.length === 0) {
+        return {
+          status: 404,
+          message: `Category with id ${id} not found`,
+        };
+      }
+
+      const [result] = await connection.query<ResultSetHeader>(
+        'DELETE FROM categories WHERE id = ?',
+        [id]
+      );
+
+      // ! : return the deleted category
       return {
-        status: 404,
-        message: `Category with id ${id} not found`,
+        status: 200,
+        message: `Category with id ${id} deleted successfully!`,
       };
     }
-
-    const [result] = await connection.query<ResultSetHeader>(
-      'DELETE FROM categories WHERE id = ?',
-      [id]
+  } catch (error) {
+    console.error(
+      'An error occurred while deleting a category: ',
+      error
     );
-
-    // ! : return the deleted category
     return {
-      status: 200,
-      message: `Category with id ${id} deleted successfully!`,
+      status: 500,
+      message: 'Failed to delete category',
     };
+  } finally {
+    await connection?.end();
   }
 }

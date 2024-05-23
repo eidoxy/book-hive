@@ -111,9 +111,8 @@ export async function updateShelf(id: number, bodyRequest: Shelf) {
       status: 200,
       message: 'Shelf updated successfully!',
       payload: {
+        ...bodyRequest,
         id,
-        name: bodyRequest.name,
-        description: bodyRequest.description,
       },
     };
   }
