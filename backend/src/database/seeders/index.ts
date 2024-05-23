@@ -9,7 +9,7 @@ const seedDatabase = async () => {
 
     if (connection) {
       await seedAdmins();
-      // await seedLibraryProfile();
+      await seedLibraryProfile();
 
       connection.end();
     }

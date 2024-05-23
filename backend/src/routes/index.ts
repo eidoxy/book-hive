@@ -6,6 +6,10 @@ import cateogryRoutes from './category';
 import authorRoutes from './author';
 import publisherRoutes from './publisher';
 import shelfRoutes from './shelf';
+import libraryProfileRoutes from './libraryProfile';
+import bookRoutes from './book';
+import bookDetailRoutes from './bookDetail';
+import stockRoutes from './stock';
 
 const router = Router();
 
@@ -15,6 +19,10 @@ router
   .use(cateogryRoutes)
   .use(authorRoutes)
   .use(publisherRoutes)
-  .use(shelfRoutes);
+  .use(shelfRoutes)
+  .use(libraryProfileRoutes)
+  .use(bookRoutes)
+  .use(bookDetailRoutes)
+  .use(stockRoutes);
 
 export default router;
