@@ -8,7 +8,7 @@ const data = {
   address: 'Kampus PENS',
   phone: '1234567890',
   email: 'bookhive@pens.ac.id',
-  year_established: new Date(),
+  year_established: new Date().getFullYear(),
 };
 
 export default async function seedLibraryProfile() {
@@ -18,14 +18,14 @@ export default async function seedLibraryProfile() {
     if (connection) {
       const [rows] = await connection.query<
         LibraryProfileQueryResult[]
-      >('SELECT * FROM library_profiles WHERE email = ?', [
+      >('SELECT * FROM library_profile WHERE email = ?', [
         data.email,
       ]);
 
       // ? : check if there is no library profile with the email
       if (rows.length === 0) {
         await connection.query<ResultSetHeader>(
-          'INSERT INTO library_profiles (name, address, phone, email, year_established) VALUES (?, ?, ?, ?, ?)',
+          'INSERT INTO library_profile (name, address, phone, email, year_established) VALUES (?, ?, ?, ?, ?)',
           [
             data.name,
             data.address,

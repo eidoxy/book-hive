@@ -8,7 +8,7 @@
     "build": "tsc --outDir build",
     "serve": "concurrently --kill-others \"tsc --watch\" \"nodemon ./tmp/server.js \"",
     "start": "node build/server.ts",
-    "seed": "ts-node src/database/seeders/index.ts",
+    "seed": "ts-node src/database/seeders",
     "dev": "nodemon src/server.ts"
   },
   "keywords": [],
