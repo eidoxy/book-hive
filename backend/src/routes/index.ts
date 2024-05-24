@@ -10,6 +10,7 @@ import libraryProfileRoutes from './libraryProfile';
 import bookRoutes from './book';
 import bookDetailRoutes from './bookDetail';
 import stockRoutes from './stock';
+import borrowingRoutes from './borrowing';
 
 const router = Router();
 
@@ -23,6 +24,7 @@ router
   .use(libraryProfileRoutes)
   .use(bookRoutes)
   .use(bookDetailRoutes)
-  .use(stockRoutes);
+  .use(stockRoutes)
+  .use(borrowingRoutes);
 
 export default router;
