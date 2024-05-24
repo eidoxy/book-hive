@@ -8,7 +8,7 @@ import {
   updatePublisher,
   deletePublisher,
 } from '../service/publisher.service';
-import { response } from '../utils/response';
+import { serverError } from '../utils/response';
 
 export async function getPublishersController(
   req: Request,
@@ -25,7 +25,7 @@ export async function getPublishersController(
       'An error occurred while fetching publishers: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -45,7 +45,7 @@ export async function getPublisherByIdController(
       'An error occurred while fetching a publisher: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -65,7 +65,7 @@ export async function createPublisherController(
       'An error occurred while creating a publisher: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -86,7 +86,7 @@ export async function updatePublisherController(
       'An error occurred while updating a publisher: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -106,6 +106,6 @@ export async function deletePublisherController(
       'An error occurred while deleting a publisher: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }

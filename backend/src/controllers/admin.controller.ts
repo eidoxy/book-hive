@@ -9,7 +9,27 @@ import {
   updateAdmin,
   deleteAdmin,
 } from '../service/admin.service';
-import { response } from '../utils/response';
+import { serverError } from '../utils/response';
+
+export async function loginAdminController(
+  req: Request,
+  res: Response
+) {
+  try {
+    const admin = req.body as Admin;
+    const adminLogin = await loginAdmin(admin);
+
+    if (admin) {
+      return res.status(adminLogin.status).send(adminLogin);
+    }
+  } catch (error) {
+    console.error(
+      'An error occurred while logging in admin: ',
+      error
+    );
+    return res.status(serverError.status).send(serverError);
+  }
+}
 
 export async function createAdminController(
   req: Request,
@@ -24,7 +44,7 @@ export async function createAdminController(
     }
   } catch (error) {
     console.error('An error occurred while creating admin: ', error);
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -36,14 +56,14 @@ export async function getAdminsController(
     const admins = await getAdmins();
 
     if (admins) {
-      return res.status(200).send(admins);
+      return res.status(admins.status).send(admins);
     }
   } catch (error) {
     console.error(
       'An error occurred while getting all admins: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -63,7 +83,7 @@ export async function getAdminByIdController(
       'An error occurred while getting admin by id: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -82,7 +102,7 @@ export async function updateAdminController(
     }
   } catch (error) {
     console.error('An error occurred while updating admin: ', error);
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -99,6 +119,6 @@ export async function deleteAdminController(
     }
   } catch (error) {
     console.error('An error occurred while deleting admin: ', error);
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }

@@ -8,7 +8,7 @@ import {
   updateCategory,
   deleteCategory,
 } from '../service/category.service';
-import { response } from '../utils/response';
+import { serverError } from '../utils/response';
 
 export async function getCategoriesController(
   req: Request,
@@ -25,7 +25,7 @@ export async function getCategoriesController(
       'An error occurred while fetching categories: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -45,7 +45,7 @@ export async function getCategoryByIdController(
       'An error occurred while fetching a category: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -65,7 +65,7 @@ export async function createCategoryController(
       'An error occurred while creating a category: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -86,7 +86,7 @@ export async function updateCategoryController(
       'An error occurred while updating a category: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -106,6 +106,6 @@ export async function deleteCategoryController(
       'An error occurred while deleting a category: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }

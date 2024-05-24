@@ -8,7 +8,7 @@ import {
   updateBookDetail,
   deleteBookDetail,
 } from '../service/bookDetail.service';
-import { response } from '../utils/response';
+import { serverError } from '../utils/response';
 
 export async function getBookDetailsController(
   req: Request,
@@ -25,7 +25,7 @@ export async function getBookDetailsController(
       'An error occurred while fetching book details: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -45,7 +45,7 @@ export async function getBookDetailByIdController(
       'An error occurred while fetching a book detail: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -65,7 +65,7 @@ export async function createBookDetailController(
       'An error occurred while creating a book detail: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -86,7 +86,7 @@ export async function updateBookDetailController(
       'An error occurred while updating a book detail: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -106,6 +106,6 @@ export async function deleteBookDetailController(
       'An error occurred while deleting a book detail: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }

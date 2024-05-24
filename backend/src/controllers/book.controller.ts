@@ -8,7 +8,7 @@ import {
   updateBook,
   deleteBook,
 } from '../service/book.service';
-import { response } from '../utils/response';
+import { serverError } from '../utils/response';
 
 export async function getBooksController(
   req: Request,
@@ -22,7 +22,7 @@ export async function getBooksController(
     }
   } catch (error) {
     console.error('An error occurred while fetching books: ', error);
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -39,7 +39,7 @@ export async function getBookByIdController(
     }
   } catch (error) {
     console.error('An error occurred while fetching a book: ', error);
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -56,7 +56,7 @@ export async function createBookController(
     }
   } catch (error) {
     console.error('An error occurred while creating a book: ', error);
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -74,7 +74,7 @@ export async function updateBookController(
     }
   } catch (error) {
     console.error('An error occurred while updating a book: ', error);
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -91,6 +91,6 @@ export async function deleteBookController(
     }
   } catch (error) {
     console.error('An error occurred while deleting a book: ', error);
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }

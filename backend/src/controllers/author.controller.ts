@@ -8,7 +8,7 @@ import {
   updateAuthor,
   deleteAuthor,
 } from '../service/author.service';
-import { response } from '../utils/response';
+import { serverError } from '../utils/response';
 
 export async function getAuthorsController(
   req: Request,
@@ -25,7 +25,7 @@ export async function getAuthorsController(
       'An error occurred while fetching authors: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -45,7 +45,7 @@ export async function getAuthorByIdController(
       'An error occurred while fetching an author: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -65,7 +65,7 @@ export async function createAuthorController(
       'An error occurred while creating an author: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -86,7 +86,7 @@ export async function updateAuthorController(
       'An error occurred while updating an author: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -106,6 +106,6 @@ export async function deleteAuthorController(
       'An error occurred while deleting an author: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }

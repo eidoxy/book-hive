@@ -1,6 +1,4 @@
-export const response = (status: number, body: any) => {
-  return {
-    status,
-    body: JSON.stringify(body),
-  };
+export const serverError = {
+  status: 500,
+  message: 'Internal server error',
 };

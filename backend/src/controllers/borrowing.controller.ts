@@ -9,7 +9,7 @@ import {
   updateBorrowing,
   deleteBorrowing,
 } from '../service/borrowing.service';
-import { response } from '../utils/response';
+import { serverError } from '../utils/response';
 
 export async function getBorrowingsController(
   req: Request,
@@ -26,7 +26,7 @@ export async function getBorrowingsController(
       'An error occurred while fetching borrowings: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -46,7 +46,7 @@ export async function getBorrowingByIdController(
       'An error occurred while fetching a borrowing: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -65,7 +65,7 @@ export async function getBorrowingsLateController(
       'An error occurred while fetching late borrowings: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -85,7 +85,7 @@ export async function createBorrowingController(
       'An error occurred while creating a borrowing: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -106,7 +106,7 @@ export async function updateBorrowingController(
       'An error occurred while updating a borrowing: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -126,6 +126,6 @@ export async function deleteBorrowingController(
       'An error occurred while deleting a borrowing: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }

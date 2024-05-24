@@ -8,7 +8,7 @@ import {
   updateStock,
   deleteStock,
 } from '../service/stock.service';
-import { response } from '../utils/response';
+import { serverError } from '../utils/response';
 
 export async function getStocksController(
   req: Request,
@@ -22,7 +22,7 @@ export async function getStocksController(
     }
   } catch (error) {
     console.error('An error occurred while fetching stocks: ', error);
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -42,7 +42,7 @@ export async function getStockByIdController(
       'An error occurred while fetching a stock: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -62,7 +62,7 @@ export async function createStockController(
       'An error occurred while creating a stock: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -83,7 +83,7 @@ export async function updateStockController(
       'An error occurred while updating a stock: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -103,6 +103,6 @@ export async function deleteStockController(
       'An error occurred while deleting a stock: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }

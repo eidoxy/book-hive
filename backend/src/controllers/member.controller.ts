@@ -9,7 +9,7 @@ import {
   updateMember,
   deleteMember,
 } from '../service/member.service';
-import { response } from '../utils/response';
+import { serverError } from '../utils/response';
 
 export async function registerMemberController(
   req: Request,
@@ -27,7 +27,7 @@ export async function registerMemberController(
       'An error occurred while registering member: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -47,7 +47,7 @@ export async function loginMemberController(
       'An error occurred while logging in member: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -59,14 +59,14 @@ export async function getMembersController(
     const members = await getMembers();
 
     if (members) {
-      return res.status(200).send(members);
+      return res.status(members.status).send(members);
     }
   } catch (error) {
     console.error(
       'An error occurred while getting all members: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -86,7 +86,7 @@ export async function getMemberByIdController(
       'An error occurred while getting member by id: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -104,7 +104,7 @@ export async function updateMemberController(
     }
   } catch (error) {
     console.error('An error occurred while updating member: ', error);
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -121,6 +121,6 @@ export async function deleteMemberController(
     }
   } catch (error) {
     console.error('An error occurred while deleting member: ', error);
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }

@@ -8,7 +8,7 @@ import {
   updateShelf,
   deleteShelf,
 } from '../service/shelf.service';
-import { response } from '../utils/response';
+import { serverError } from '../utils/response';
 
 export async function getShelvesController(
   req: Request,
@@ -25,7 +25,7 @@ export async function getShelvesController(
       'An error occurred while fetching shelves: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -45,7 +45,7 @@ export async function getShelfByIdController(
       'An error occurred while fetching a shelf: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -65,7 +65,7 @@ export async function createShelfController(
       'An error occurred while creating a shelf: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -86,7 +86,7 @@ export async function updateShelfController(
       'An error occurred while updating a shelf: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -106,6 +106,6 @@ export async function deleteShelfController(
       'An error occurred while deleting a shelf: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }

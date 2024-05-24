@@ -5,7 +5,7 @@ import {
   getLibraryProfiles,
   updateLibrary,
 } from '../service/libraryProfile.service';
-import { response } from '../utils/response';
+import { serverError } from '../utils/response';
 
 export async function getLibraryProfilesController(
   req: Request,
@@ -22,7 +22,7 @@ export async function getLibraryProfilesController(
       'An error occurred while fetching library profiles: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
 
@@ -43,6 +43,6 @@ export async function updateLibraryController(
       'An error occurred while updating a library profile: ',
       error
     );
-    return res.status(500).send(response);
+    return res.status(serverError.status).send(serverError);
   }
 }
