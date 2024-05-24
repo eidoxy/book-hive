@@ -8,7 +8,7 @@ import {
 const libraryProfileRoutes = Router();
 
 libraryProfileRoutes
-  .get('/api/library-profile', getLibraryProfilesController)
-  .put('/api/library-profile/update/:id', updateLibraryController);
+  .get('/', getLibraryProfilesController)
+  .put('/update/:id', updateLibraryController);
 
 export default libraryProfileRoutes;

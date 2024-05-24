@@ -11,10 +11,10 @@ import {
 const adminRoutes = Router();
 
 adminRoutes
-  .get('/api/admin', getAdminsController)
-  .get('/api/admin/:id', getAdminByIdController)
-  .post('/api/admin/create', createAdminController)
-  .put('/api/admin/update/:id', updateAdminController)
-  .delete('/api/admin/delete/:id', deleteAdminController);
+  .get('/', getAdminsController)
+  .get('/:id', getAdminByIdController)
+  .post('/create', createAdminController)
+  .put('/update/:id', updateAdminController)
+  .delete('/delete/:id', deleteAdminController);
 
 export default adminRoutes;

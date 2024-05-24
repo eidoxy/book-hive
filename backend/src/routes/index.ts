@@ -15,16 +15,16 @@ import borrowingRoutes from './borrowing';
 const router = Router();
 
 router
-  .use(adminRoutes)
-  .use(memberRoutes)
-  .use(cateogryRoutes)
-  .use(authorRoutes)
-  .use(publisherRoutes)
-  .use(shelfRoutes)
-  .use(libraryProfileRoutes)
-  .use(bookRoutes)
-  .use(bookDetailRoutes)
-  .use(stockRoutes)
-  .use(borrowingRoutes);
+  .use('/admin', adminRoutes)
+  .use('/member', memberRoutes)
+  .use('/category', cateogryRoutes)
+  .use('/author', authorRoutes)
+  .use('/publisher', publisherRoutes)
+  .use('/shelf', shelfRoutes)
+  .use('/library-profile', libraryProfileRoutes)
+  .use('/book', bookRoutes)
+  .use('/book-detail', bookDetailRoutes)
+  .use('/stock', stockRoutes)
+  .use('/borrowing', borrowingRoutes);
 
 export default router;

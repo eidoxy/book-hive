@@ -11,10 +11,10 @@ import {
 const publisherRoutes = Router();
 
 publisherRoutes
-  .get('/api/publisher', getPublishersController)
-  .get('/api/publisher/:id', getPublisherByIdController)
-  .post('/api/publisher/create', createPublisherController)
-  .put('/api/publisher/update/:id', updatePublisherController)
-  .delete('/api/publisher/delete/:id', deletePublisherController);
+  .get('/', getPublishersController)
+  .get('/:id', getPublisherByIdController)
+  .post('/create', createPublisherController)
+  .put('/update/:id', updatePublisherController)
+  .delete('/delete/:id', deletePublisherController);
 
 export default publisherRoutes;

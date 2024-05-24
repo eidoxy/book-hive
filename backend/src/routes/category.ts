@@ -11,10 +11,10 @@ import {
 const categoryRoutes = Router();
 
 categoryRoutes
-  .get('/api/category', getCategoriesController)
-  .get('/api/category/:id', getCategoryByIdController)
-  .post('/api/category/create', createCategoryController)
-  .put('/api/category/update/:id', updateCategoryController)
-  .delete('/api/category/delete/:id', deleteCategoryController);
+  .get('/', getCategoriesController)
+  .get('/:id', getCategoryByIdController)
+  .post('/create', createCategoryController)
+  .put('/update/:id', updateCategoryController)
+  .delete('/delete/:id', deleteCategoryController);
 
 export default categoryRoutes;

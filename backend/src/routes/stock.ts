@@ -11,10 +11,10 @@ import {
 const stockRoutes = Router();
 
 stockRoutes
-  .get('/api/stock', getStocksController)
-  .get('/api/stock/:id', getStockByIdController)
-  .post('/api/stock/create', createStockController)
-  .put('/api/stock/update/:id', updateStockController)
-  .delete('/api/stock/delete/:id', deleteStockController);
+  .get('/', getStocksController)
+  .get('/:id', getStockByIdController)
+  .post('/create', createStockController)
+  .put('/update/:id', updateStockController)
+  .delete('/delete/:id', deleteStockController);
 
 export default stockRoutes;

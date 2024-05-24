@@ -11,10 +11,10 @@ import {
 const bookDetailRoutes = Router();
 
 bookDetailRoutes
-  .get('/api/book-detail', getBookDetailsController)
-  .get('/api/book-detail/:id', getBookDetailByIdController)
-  .post('/api/book-detail/create', createBookDetailController)
-  .put('/api/book-detail/update/:id', updateBookDetailController)
-  .delete('/api/book-detail/delete/:id', deleteBookDetailController);
+  .get('/', getBookDetailsController)
+  .get('/:id', getBookDetailByIdController)
+  .post('/create', createBookDetailController)
+  .put('/update/:id', updateBookDetailController)
+  .delete('/delete/:id', deleteBookDetailController);
 
 export default bookDetailRoutes;

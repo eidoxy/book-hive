@@ -12,11 +12,11 @@ import {
 const borrowingRoutes = Router();
 
 borrowingRoutes
-  .get('/api/borrowing', getBorrowingsController)
-  .get('/api/borrowing/late', getBorrowingsLateController)
-  .post('/api/borrowing/create', createBorrowingController)
-  .get('/api/borrowing/:id', getBorrowingByIdController)
-  .put('/api/borrowing/update/:id', updateBorrowingController)
-  .delete('/api/borrowing/delete/:id', deleteBorrowingController);
+  .get('/', getBorrowingsController)
+  .get('/late', getBorrowingsLateController)
+  .post('/create', createBorrowingController)
+  .get('/:id', getBorrowingByIdController)
+  .put('/update/:id', updateBorrowingController)
+  .delete('/delete/:id', deleteBorrowingController);
 
 export default borrowingRoutes;

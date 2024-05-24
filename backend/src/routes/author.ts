@@ -11,10 +11,10 @@ import {
 const authorRoutes = Router();
 
 authorRoutes
-  .get('/api/author', getAuthorsController)
-  .get('/api/author/:id', getAuthorByIdController)
-  .post('/api/author/create', createAuthorController)
-  .put('/api/author/update/:id', updateAuthorController)
-  .delete('/api/author/delete/:id', deleteAuthorController);
+  .get('/', getAuthorsController)
+  .get('/:id', getAuthorByIdController)
+  .post('/create', createAuthorController)
+  .put('/update/:id', updateAuthorController)
+  .delete('/delete/:id', deleteAuthorController);
 
 export default authorRoutes;

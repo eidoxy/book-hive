@@ -12,11 +12,11 @@ import {
 const memberRoutes = Router();
 
 memberRoutes
-  .get('/api/member', getMembersController)
-  .get('/api/member/:id', getMemberByIdController)
-  .post('/api/member/register', registerMemberController)
-  .post('/api/member/login', loginMemberController)
-  .put('/api/member/update/:id', updateMemberController)
-  .delete('/api/member/delete/:id', deleteMemberController);
+  .get('/', getMembersController)
+  .get('/:id', getMemberByIdController)
+  .post('/register', registerMemberController)
+  .post('/login', loginMemberController)
+  .put('/update/:id', updateMemberController)
+  .delete('/delete/:id', deleteMemberController);
 
 export default memberRoutes;
