@@ -7,19 +7,22 @@ import { ResultSetHeader } from 'mysql2';
 import { createToken } from '../utils/token';
 
 export async function loginAdmin(bodyRequest: Admin) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<AdminQueryResult[]>(
-      'SELECT * FROM admin WHERE email = ?',
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<AdminQueryResult[]>(
+      'SELECT * FROM admins WHERE email = ?',
       [bodyRequest.email]
     );
 
-    // ? : check if admin with email already exists
-    if (rows.length > 0) {
+    // ? : check if the email is incorrect
+    if (rows.length === 0) {
       return {
-        status: 409,
-        message: `Email ${bodyRequest.email} already exists!`,
+        status: 404,
+        message: 'Incorrect email!',
       };
     }
 
@@ -56,14 +59,25 @@ export async function loginAdmin(bodyRequest: Admin) {
         token: token,
       },
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function getAdmins() {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<AdminQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<AdminQueryResult[]>(
       'SELECT * FROM admins'
     );
 
@@ -79,16 +93,32 @@ export async function getAdmins() {
     return {
       status: 200,
       message: 'Admins fetched successfully!',
-      data: rows,
+      payload: {
+        id: rows[0].id,
+        name: rows[0].name,
+        email: rows[0].email,
+        phone: rows[0].phone,
+      },
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function getAdminById(id: number) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<AdminQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<AdminQueryResult[]>(
       'SELECT * FROM admins WHERE id = ?',
       [id]
     );
@@ -105,16 +135,32 @@ export async function getAdminById(id: number) {
     return {
       status: 200,
       message: 'Admin fetched successfully!',
-      payload: rows[0],
+      payload: {
+        id: rows[0].id,
+        name: rows[0].name,
+        email: rows[0].email,
+        phone: rows[0].phone,
+      },
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function createAdmin(bodyRequest: Admin) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rowsEmail] = await connection.query<AdminQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rowsEmail] = await db.query<AdminQueryResult[]>(
       'SELECT * FROM admins WHERE email = ?',
       [bodyRequest.email]
     );
@@ -127,7 +173,7 @@ export async function createAdmin(bodyRequest: Admin) {
       };
     }
 
-    const [rowsPhone] = await connection.query<AdminQueryResult[]>(
+    const [rowsPhone] = await db.query<AdminQueryResult[]>(
       'SELECT * FROM admins WHERE phone = ?',
       [bodyRequest.phone]
     );
@@ -147,8 +193,11 @@ export async function createAdmin(bodyRequest: Admin) {
     );
     bodyRequest.password = hashedPassword;
 
-    const [result] = await connection.query<ResultSetHeader>(
-      'INSERT INTO admins (name, email, password, phone) VALUES (?, ?, ?, ?)',
+    const [result] = await db.query<ResultSetHeader>(
+      `
+        INSERT INTO admins (name, email, password, phone)
+        VALUES (?, ?, ?, ?)
+      `,
       [
         bodyRequest.name,
         bodyRequest.email,
@@ -180,19 +229,29 @@ export async function createAdmin(bodyRequest: Admin) {
         id: bodyRequest.id,
         name: bodyRequest.name,
         email: bodyRequest.email,
-        password: bodyRequest.password,
         phone: bodyRequest.phone,
         token,
       },
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function updateAdmin(id: number, bodyRequest: Admin) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<AdminQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<AdminQueryResult[]>(
       'SELECT * FROM admins WHERE id = ?',
       [id]
     );
@@ -212,8 +271,15 @@ export async function updateAdmin(id: number, bodyRequest: Admin) {
     );
     bodyRequest.password = hashedPassword;
 
-    const [result] = await connection.query<ResultSetHeader>(
-      'UPDATE admins SET name = ?, email = ?, password = ?, phone = ? WHERE id = ?',
+    const [result] = await db.query<ResultSetHeader>(
+      `
+        UPDATE admins SET
+        name = ?,
+        email = ?,
+        password = ?,
+        phone = 
+        WHERE id = ?
+      `,
       [
         bodyRequest.name,
         bodyRequest.email,
@@ -231,18 +297,28 @@ export async function updateAdmin(id: number, bodyRequest: Admin) {
         id: id,
         name: bodyRequest.name,
         email: bodyRequest.email,
-        password: bodyRequest.password,
         phone: bodyRequest.phone,
       },
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function deleteAdmin(id: number) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<AdminQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<AdminQueryResult[]>(
       'SELECT * FROM admins WHERE id = ?',
       [id]
     );
@@ -255,7 +331,7 @@ export async function deleteAdmin(id: number) {
       };
     }
 
-    const [result] = await connection.query<ResultSetHeader>(
+    const [result] = await db.query<ResultSetHeader>(
       'DELETE FROM admins WHERE id = ?',
       [id]
     );
@@ -265,5 +341,13 @@ export async function deleteAdmin(id: number) {
       status: 200,
       message: `Admin with id ${id} deleted successfully!`,
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
