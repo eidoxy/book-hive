@@ -29,7 +29,7 @@ export async function loginAdminController(
     const result = await loginAdmin(admin);
 
     // ! : set token in cookie if login is successful
-    if (result.status === 200 && result.payload?.token) {
+    if (result.status === 200 && result.payload) {
       res.cookie('request_token', result.payload.token, {
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
         httpOnly: true,

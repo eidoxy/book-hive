@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { authenticateToken } from '../middleware/verification';
+import { authenticateToken } from '../middleware/authenticateToken';
+import { authenticateUser } from '../middleware/authenticateUser';
 
 import {
   createAdminController,
@@ -10,17 +11,21 @@ import {
   deleteAdminController,
 } from '../controllers/admin.controller';
 
-const adminRoutes = Router();
+const publicRoutes = Router();
+const protectedRoutes = Router();
 
-// ? : add authenticateToken middleware to protect the routes
-adminRoutes.use(authenticateToken);
+publicRoutes.post('/login', loginAdminController);
 
-adminRoutes
+protectedRoutes
+  .use(authenticateToken, authenticateUser)
   .get('/', getAdminsController)
-  .post('/login', loginAdminController)
   .get('/:id', getAdminByIdController)
   .post('/create', createAdminController)
   .put('/update/:id', updateAdminController)
   .delete('/delete/:id', deleteAdminController);
+
+const adminRoutes = Router();
+adminRoutes.use(publicRoutes);
+adminRoutes.use(protectedRoutes);
 
 export default adminRoutes;

@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import { authenticateToken } from '../middleware/authenticateToken';
+import { authenticateUser } from '../middleware/authenticateUser';
 
 import {
   getBorrowingsController,
@@ -9,14 +11,22 @@ import {
   deleteBorrowingController,
 } from '../controllers/borrowing.controller';
 
-const borrowingRoutes = Router();
+const publicRoutes = Router();
+const protectedRoutes = Router();
 
-borrowingRoutes
+publicRoutes
   .get('/', getBorrowingsController)
-  .get('/late', getBorrowingsLateController)
+  .get('/:id', getBorrowingByIdController);
+
+protectedRoutes
+  .use(authenticateToken, authenticateUser)
+  .get('/late-borrowing', getBorrowingsLateController)
   .post('/create', createBorrowingController)
-  .get('/:id', getBorrowingByIdController)
   .put('/update/:id', updateBorrowingController)
   .delete('/delete/:id', deleteBorrowingController);
+
+const borrowingRoutes = Router();
+borrowingRoutes.use(publicRoutes);
+borrowingRoutes.use(protectedRoutes);
 
 export default borrowingRoutes;

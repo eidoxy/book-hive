@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import { authenticateToken } from '../middleware/authenticateToken';
+import { authenticateUser } from '../middleware/authenticateUser';
 
 import {
   getStocksController,
@@ -8,13 +10,21 @@ import {
   deleteStockController,
 } from '../controllers/stock.controller';
 
-const stockRoutes = Router();
+const publicRoutes = Router();
+const protectedRoutes = Router();
 
-stockRoutes
+publicRoutes
   .get('/', getStocksController)
-  .get('/:id', getStockByIdController)
+  .get('/:id', getStockByIdController);
+
+protectedRoutes
+  .use(authenticateToken, authenticateUser)
   .post('/create', createStockController)
   .put('/update/:id', updateStockController)
   .delete('/delete/:id', deleteStockController);
+
+const stockRoutes = Router();
+stockRoutes.use(publicRoutes);
+stockRoutes.use(protectedRoutes);
 
 export default stockRoutes;
