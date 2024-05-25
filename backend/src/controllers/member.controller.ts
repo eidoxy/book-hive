@@ -15,12 +15,27 @@ export async function registerMemberController(
   req: Request,
   res: Response
 ) {
-  try {
-    const member = req.body as Member;
-    const memberCreated = await registerMember(member);
+  const member = req.body as Member;
 
-    if (memberCreated) {
-      return res.status(memberCreated.status).send(memberCreated);
+  // ? : check if email and password are provided
+  if (!member.email || !member.password) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Email and password are required',
+    });
+  }
+
+  try {
+    const result = await registerMember(member);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      !result.status ||
+      result.status < 200 ||
+      result.status >= 300 ||
+      typeof result.status !== 'number'
+    ) {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
@@ -35,12 +50,27 @@ export async function loginMemberController(
   req: Request,
   res: Response
 ) {
-  try {
-    const member = req.body as Member;
-    const memberLogin = await loginMember(member);
+  const member = req.body as Member;
 
-    if (memberLogin) {
-      return res.status(memberLogin.status).send(memberLogin);
+  // Check if email and password are provided
+  if (!member.email || !member.password) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Email and password are required',
+    });
+  }
+
+  try {
+    const result = await loginMember(member);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      !result.status ||
+      result.status < 200 ||
+      result.status >= 300 ||
+      typeof result.status !== 'number'
+    ) {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
@@ -56,10 +86,18 @@ export async function getMembersController(
   res: Response
 ) {
   try {
-    const members = await getMembers();
+    const result = await getMembers();
 
-    if (members) {
-      return res.status(members.status).send(members);
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
@@ -74,12 +112,29 @@ export async function getMemberByIdController(
   req: Request,
   res: Response
 ) {
-  try {
-    const id = parseInt(req.params.id);
-    const member = await getMemberById(id);
+  const id = parseInt(req.params.id);
 
-    if (member) {
-      return res.status(member.status).send(member);
+  // ? : check if id is not a number
+  if (isNaN(id)) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid id',
+    });
+  }
+
+  try {
+    const result = await getMemberById(id);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
@@ -94,13 +149,42 @@ export async function updateMemberController(
   req: Request,
   res: Response
 ) {
-  try {
-    const id = parseInt(req.params.id);
-    const member = req.body as Member;
-    const memberUpdated = await updateMember(id, member);
+  const id = parseInt(req.params.id);
 
-    if (memberUpdated) {
-      return res.status(memberUpdated.status).send(memberUpdated);
+  // ? : check if id is not a number
+  if (isNaN(id)) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid id',
+    });
+  }
+
+  const member = req.body as Member;
+
+  // ? : check if name, email, password, phone are provided
+  if (
+    !member.name ||
+    !member.email ||
+    !member.password ||
+    !member.phone
+  ) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Name, email, password, and phone are required',
+    });
+  }
+
+  try {
+    const result = await updateMember(id, member);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      !result.status ||
+      result.status < 200 ||
+      result.status >= 300 ||
+      typeof result.status !== 'number'
+    ) {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error('An error occurred while updating member: ', error);
@@ -112,12 +196,27 @@ export async function deleteMemberController(
   req: Request,
   res: Response
 ) {
-  try {
-    const id = parseInt(req.params.id);
-    const memberDeleted = await deleteMember(id);
+  const id = parseInt(req.params.id);
 
-    if (memberDeleted) {
-      return res.status(memberDeleted.status).send(memberDeleted);
+  // ? : check if id is not a number
+  if (isNaN(id)) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid id',
+    });
+  }
+
+  try {
+    const result = await deleteMember(id);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      !result.status ||
+      result.status < 200 ||
+      result.status >= 300 ||
+      typeof result.status !== 'number'
+    ) {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error('An error occurred while deleting member: ', error);

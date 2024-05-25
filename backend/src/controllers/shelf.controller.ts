@@ -15,14 +15,22 @@ export async function getShelvesController(
   res: Response
 ) {
   try {
-    const shelves = await getShelves();
+    const result = await getShelves();
 
-    if (shelves) {
-      return res.status(shelves.status).send(shelves);
+    // ? : check if result is doesn't have status or invalid status
+    if (
+      result &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
-      'An error occurred while fetching shelves: ',
+      'An error occurred while getting all shelves: ',
       error
     );
     return res.status(serverError.status).send(serverError);
@@ -33,16 +41,33 @@ export async function getShelfByIdController(
   req: Request,
   res: Response
 ) {
-  try {
-    const id = Number(req.params.id);
-    const shelf = await getShelfById(id);
+  const id = Number(req.params.id);
 
-    if (shelf) {
-      return res.status(shelf.status).send(shelf);
+  // ? : check if id is not a number
+  if (isNaN(id)) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid shelf ID',
+    });
+  }
+
+  try {
+    const result = await getShelfById(id);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result.status &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
-      'An error occurred while fetching a shelf: ',
+      'An error occurred while getting a shelf by id: ',
       error
     );
     return res.status(serverError.status).send(serverError);
@@ -53,12 +78,29 @@ export async function createShelfController(
   req: Request,
   res: Response
 ) {
-  try {
-    const bodyRequest: Shelf = req.body;
-    const shelf = await createShelf(bodyRequest);
+  const bodyRequest: Shelf = req.body;
 
-    if (shelf) {
-      return res.status(shelf.status).send(shelf);
+  // ? : check if name and description is empty
+  if (!bodyRequest.name || !bodyRequest.description) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Name and description are required',
+    });
+  }
+
+  try {
+    const result = await createShelf(bodyRequest);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result.status &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
@@ -73,13 +115,39 @@ export async function updateShelfController(
   req: Request,
   res: Response
 ) {
-  try {
-    const id = Number(req.params.id);
-    const bodyRequest: Shelf = req.body;
-    const shelf = await updateShelf(id, bodyRequest);
+  const id = Number(req.params.id);
 
-    if (shelf) {
-      return res.status(shelf.status).send(shelf);
+  // ? : check if id is not a number
+  if (isNaN(id)) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid shelf ID',
+    });
+  }
+
+  const bodyRequest: Shelf = req.body;
+
+  // ? : check if name and description is empty
+  if (!bodyRequest.name || !bodyRequest.description) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Name and description are required',
+    });
+  }
+
+  try {
+    const result = await updateShelf(id, bodyRequest);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result.status &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
@@ -94,12 +162,29 @@ export async function deleteShelfController(
   req: Request,
   res: Response
 ) {
-  try {
-    const id = Number(req.params.id);
-    const shelf = await deleteShelf(id);
+  const id = Number(req.params.id);
 
-    if (shelf) {
-      return res.status(shelf.status).send(shelf);
+  // ? : check if id is not a number
+  if (isNaN(id)) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid shelf ID',
+    });
+  }
+
+  try {
+    const result = await deleteShelf(id);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result.status &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(

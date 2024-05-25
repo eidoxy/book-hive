@@ -274,23 +274,15 @@ export async function updateMember(id: number, bodyRequest: Member) {
         UPDATE members SET
         name = ?,
         email = ?,
-        member_type = ?,
-        parent_number = ?,
         phone = ?,
         address = ?,
-        major = ?,
-        department = ?
         WHERE id = ?
       `,
       [
         bodyRequest.name,
         bodyRequest.email,
-        bodyRequest.member_type,
-        bodyRequest.parent_number,
         bodyRequest.phone,
         bodyRequest.address,
-        bodyRequest.major,
-        bodyRequest.department,
         id,
       ]
     );

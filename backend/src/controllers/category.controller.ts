@@ -15,14 +15,22 @@ export async function getCategoriesController(
   res: Response
 ) {
   try {
-    const categories = await getCategories();
+    const result = await getCategories();
 
-    if (categories) {
-      return res.status(categories.status).send(categories);
+    // ? : check if result is doesn't have status or invalid status
+    if (
+      result &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
-      'An error occurred while fetching categories: ',
+      'An error occurred while getting all categories: ',
       error
     );
     return res.status(serverError.status).send(serverError);
@@ -33,16 +41,33 @@ export async function getCategoryByIdController(
   req: Request,
   res: Response
 ) {
-  try {
-    const id = Number(req.params.id);
-    const category = await getCategoryById(id);
+  const id = Number(req.params.id);
 
-    if (category) {
-      return res.status(category.status).send(category);
+  // ? : check if id is not a number
+  if (isNaN(id)) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid category ID',
+    });
+  }
+
+  try {
+    const result = await getCategoryById(id);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result.status &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
-      'An error occurred while fetching a category: ',
+      'An error occurred while getting a category by id: ',
       error
     );
     return res.status(serverError.status).send(serverError);
@@ -53,12 +78,29 @@ export async function createCategoryController(
   req: Request,
   res: Response
 ) {
-  try {
-    const bodyRequest: Category = req.body;
-    const category = await createCategory(bodyRequest);
+  const bodyRequest: Category = req.body;
 
-    if (category) {
-      return res.status(category.status).send(category);
+  // ? : check if name is empty
+  if (!bodyRequest.name) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Category name is required',
+    });
+  }
+
+  try {
+    const result = await createCategory(bodyRequest);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result.status &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
@@ -73,13 +115,39 @@ export async function updateCategoryController(
   req: Request,
   res: Response
 ) {
-  try {
-    const id = Number(req.params.id);
-    const bodyRequest: Category = req.body;
-    const category = await updateCategory(id, bodyRequest);
+  const id = Number(req.params.id);
 
-    if (category) {
-      return res.status(category.status).send(category);
+  // ? : check if id is not a number
+  if (isNaN(id)) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid category ID',
+    });
+  }
+
+  const bodyRequest: Category = req.body;
+
+  // ? : check if name is empty
+  if (!bodyRequest.name) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Category name is required',
+    });
+  }
+
+  try {
+    const result = await updateCategory(id, bodyRequest);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result.status &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
@@ -94,12 +162,29 @@ export async function deleteCategoryController(
   req: Request,
   res: Response
 ) {
-  try {
-    const id = Number(req.params.id);
-    const category = await deleteCategory(id);
+  const id = Number(req.params.id);
 
-    if (category) {
-      return res.status(category.status).send(category);
+  // ? : check if id is not a number
+  if (isNaN(id)) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid category ID',
+    });
+  }
+
+  try {
+    const result = await deleteCategory(id);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result.status &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(

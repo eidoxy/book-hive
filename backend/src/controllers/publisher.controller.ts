@@ -15,14 +15,22 @@ export async function getPublishersController(
   res: Response
 ) {
   try {
-    const publishers = await getPublishers();
+    const result = await getPublishers();
 
-    if (publishers) {
-      return res.status(publishers.status).send(publishers);
+    // ? : check if result is doesn't have status or invalid status
+    if (
+      result &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
-      'An error occurred while fetching publishers: ',
+      'An error occurred while getting all publishers: ',
       error
     );
     return res.status(serverError.status).send(serverError);
@@ -33,16 +41,33 @@ export async function getPublisherByIdController(
   req: Request,
   res: Response
 ) {
-  try {
-    const id = Number(req.params.id);
-    const publisher = await getPublisherById(id);
+  const id = Number(req.params.id);
 
-    if (publisher) {
-      return res.status(publisher.status).send(publisher);
+  // ? : check if id is not a number
+  if (isNaN(id)) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid ID',
+    });
+  }
+
+  try {
+    const result = await getPublisherById(id);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result.status &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
-      'An error occurred while fetching a publisher: ',
+      'An error occurred while getting a publisher by id: ',
       error
     );
     return res.status(serverError.status).send(serverError);
@@ -53,12 +78,29 @@ export async function createPublisherController(
   req: Request,
   res: Response
 ) {
-  try {
-    const bodyRequest: Publisher = req.body;
-    const publisher = await createPublisher(bodyRequest);
+  const bodyRequest: Publisher = req.body;
 
-    if (publisher) {
-      return res.status(publisher.status).send(publisher);
+  // ? : check if name is empty
+  if (!bodyRequest.name) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Name are required',
+    });
+  }
+
+  try {
+    const result = await createPublisher(bodyRequest);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result.status &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
@@ -73,13 +115,39 @@ export async function updatePublisherController(
   req: Request,
   res: Response
 ) {
-  try {
-    const id = Number(req.params.id);
-    const bodyRequest: Publisher = req.body;
-    const publisher = await updatePublisher(id, bodyRequest);
+  const id = Number(req.params.id);
 
-    if (publisher) {
-      return res.status(publisher.status).send(publisher);
+  // ? : check if id is not a number
+  if (isNaN(id)) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid ID',
+    });
+  }
+
+  const bodyRequest: Publisher = req.body;
+
+  // ? : check if name is empty
+  if (!bodyRequest.name) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Name are required',
+    });
+  }
+
+  try {
+    const result = await updatePublisher(id, bodyRequest);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result.status &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
@@ -94,12 +162,29 @@ export async function deletePublisherController(
   req: Request,
   res: Response
 ) {
-  try {
-    const id = Number(req.params.id);
-    const publisher = await deletePublisher(id);
+  const id = Number(req.params.id);
 
-    if (publisher) {
-      return res.status(publisher.status).send(publisher);
+  // ? : check if id is not a number
+  if (isNaN(id)) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid ID',
+    });
+  }
+
+  try {
+    const result = await deletePublisher(id);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result.status &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(

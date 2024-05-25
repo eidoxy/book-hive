@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { authenticateToken } from '../middleware/verification';
 
 import {
   createAdminController,
@@ -10,6 +11,9 @@ import {
 } from '../controllers/admin.controller';
 
 const adminRoutes = Router();
+
+// ? : add authenticateToken middleware to protect the routes
+adminRoutes.use(authenticateToken);
 
 adminRoutes
   .get('/', getAdminsController)

@@ -16,14 +16,22 @@ export async function getBorrowingsController(
   res: Response
 ) {
   try {
-    const borrowings = await getBorrowings();
+    const result = await getBorrowings();
 
-    if (borrowings) {
-      return res.status(borrowings.status).send(borrowings);
+    // ? : check if result is doesn't have status or invalid status
+    if (
+      result &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
-      'An error occurred while fetching borrowings: ',
+      'An error occurred while getting all borrowings: ',
       error
     );
     return res.status(serverError.status).send(serverError);
@@ -34,16 +42,33 @@ export async function getBorrowingByIdController(
   req: Request,
   res: Response
 ) {
-  try {
-    const id = Number(req.params.id);
-    const borrowing = await getBorrowingById(id);
+  const id = Number(req.params.id);
 
-    if (borrowing) {
-      return res.status(borrowing.status).send(borrowing);
+  // ? : check if id is not a number
+  if (isNaN(id)) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid borrowing ID',
+    });
+  }
+
+  try {
+    const result = await getBorrowingById(id);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result.status &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
-      'An error occurred while fetching a borrowing: ',
+      'An error occurred while getting a borrowing by id: ',
       error
     );
     return res.status(serverError.status).send(serverError);
@@ -55,14 +80,22 @@ export async function getBorrowingsLateController(
   res: Response
 ) {
   try {
-    const borrowings = await getBorrowingsLate();
+    const result = await getBorrowingsLate();
 
-    if (borrowings) {
-      return res.status(borrowings.status).send(borrowings);
+    // ? : check if result is doesn't have status or invalid status
+    if (
+      result &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
-      'An error occurred while fetching late borrowings: ',
+      'An error occurred while getting late borrowings: ',
       error
     );
     return res.status(serverError.status).send(serverError);
@@ -73,12 +106,29 @@ export async function createBorrowingController(
   req: Request,
   res: Response
 ) {
-  try {
-    const bodyRequest: Borrowing = req.body;
-    const borrowing = await createBorrowing(bodyRequest);
+  const bodyRequest: Borrowing = req.body;
 
-    if (borrowing) {
-      return res.status(borrowing.status).send(borrowing);
+  // ? : check if bodyRequest is not a Borrowing
+  if (!bodyRequest) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid request body',
+    });
+  }
+
+  try {
+    const result = await createBorrowing(bodyRequest);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result.status &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
@@ -93,13 +143,39 @@ export async function updateBorrowingController(
   req: Request,
   res: Response
 ) {
-  try {
-    const id = Number(req.params.id);
-    const bodyRequest: Borrowing = req.body;
-    const borrowing = await updateBorrowing(id, bodyRequest);
+  const id = Number(req.params.id);
 
-    if (borrowing) {
-      return res.status(borrowing.status).send(borrowing);
+  // ? : check if id is not a number
+  if (isNaN(id)) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid borrowing ID',
+    });
+  }
+
+  const bodyRequest: Borrowing = req.body;
+
+  // ? : check if bodyRequest is not a Borrowing
+  if (!bodyRequest) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid request body',
+    });
+  }
+
+  try {
+    const result = await updateBorrowing(id, bodyRequest);
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result.status &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
@@ -114,12 +190,29 @@ export async function deleteBorrowingController(
   req: Request,
   res: Response
 ) {
-  try {
-    const id = Number(req.params.id);
-    const borrowing = await deleteBorrowing(id);
+  const id = Number(req.params.id);
 
-    if (borrowing) {
-      return res.status(borrowing.status).send(borrowing);
+  // ? : check if id is not a number
+  if (isNaN(id)) {
+    return res.status(400).send({
+      status: 400,
+      message: 'Invalid borrowing ID',
+    });
+  }
+
+  try {
+    const result = await deleteBorrowing(id);
+
+    // ? : check if result is doesn't have status or invalid status
+    if (
+      result &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
     }
   } catch (error) {
     console.error(
