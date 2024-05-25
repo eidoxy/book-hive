@@ -135,6 +135,7 @@ export async function loginMember(bodyReqeust: Member) {
       id: member.id,
       name: member.name,
       email: member.email,
+      role: 'user',
     });
 
     // ! : return the member

@@ -46,6 +46,7 @@ export async function loginAdmin(bodyRequest: Admin) {
       id: admin.id,
       name: admin.name,
       email: admin.email,
+      role: 'admin',
     });
 
     // ! : return the token
@@ -93,12 +94,12 @@ export async function getAdmins() {
     return {
       status: 200,
       message: 'Admins fetched successfully!',
-      payload: {
-        id: rows[0].id,
-        name: rows[0].name,
-        email: rows[0].email,
-        phone: rows[0].phone,
-      },
+      payload: rows.map((admin) => ({
+        id: admin.id,
+        name: admin.name,
+        email: admin.email,
+        phone: admin.phone,
+      })),
     };
   } catch (error) {
     console.error('Database query error:', error);
