@@ -4,10 +4,13 @@ import getConnection from '../database';
 import { ResultSetHeader } from 'mysql2';
 
 export async function getShelves() {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<ShelfQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<ShelfQueryResult[]>(
       'SELECT * FROM shelves'
     );
 
@@ -25,14 +28,25 @@ export async function getShelves() {
       message: 'Shelf fetched successfully!',
       payload: rows,
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function getShelfById(id: number) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<ShelfQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<ShelfQueryResult[]>(
       'SELECT * FROM shelves WHERE id = ?',
       [id]
     );
@@ -51,15 +65,32 @@ export async function getShelfById(id: number) {
       message: 'Shelf fetched successfully!',
       payload: rows[0],
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function createShelf(bodyRequest: Shelf) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [result] = await connection.query<ResultSetHeader>(
-      'INSERT INTO shelves (name, description) VALUES (?, ?)',
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [result] = await db.query<ResultSetHeader>(
+      `
+        INSERT INTO shelves (
+          name,
+          description
+        )
+        VALUES (?, ?)
+      `,
       [bodyRequest.name, bodyRequest.description]
     );
 
@@ -81,14 +112,25 @@ export async function createShelf(bodyRequest: Shelf) {
         description: bodyRequest.description,
       },
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function updateShelf(id: number, bodyRequest: Shelf) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<ShelfQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<ShelfQueryResult[]>(
       'SELECT * FROM shelves WHERE id = ?',
       [id]
     );
@@ -101,10 +143,23 @@ export async function updateShelf(id: number, bodyRequest: Shelf) {
       };
     }
 
-    const [result] = await connection.query<ResultSetHeader>(
-      'UPDATE shelves SET name = ?, description = ? WHERE id = ?',
+    const [result] = await db.query<ResultSetHeader>(
+      `
+        UPDATE shelves SET
+        name = ?,
+        description = ?
+        WHERE id = ?
+      `,
       [bodyRequest.name, bodyRequest.description, id]
     );
+
+    // ? : check if the result is empty
+    if (result.affectedRows === 0) {
+      return {
+        status: 500,
+        message: 'Failed to update shelf',
+      };
+    }
 
     // ! : return the updated shelf
     return {
@@ -115,14 +170,25 @@ export async function updateShelf(id: number, bodyRequest: Shelf) {
         id,
       },
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function deleteShelf(id: number) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<ShelfQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<ShelfQueryResult[]>(
       'SELECT * FROM shelves WHERE id = ?',
       [id]
     );
@@ -135,7 +201,7 @@ export async function deleteShelf(id: number) {
       };
     }
 
-    const [result] = await connection.query<ResultSetHeader>(
+    const [result] = await db.query<ResultSetHeader>(
       'DELETE FROM shelves WHERE id = ?',
       [id]
     );
@@ -145,5 +211,13 @@ export async function deleteShelf(id: number) {
       status: 200,
       message: `Shelf with id ${id} deleted successfully!`,
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }

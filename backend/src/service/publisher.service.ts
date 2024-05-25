@@ -7,10 +7,13 @@ import getConnection from '../database';
 import { ResultSetHeader } from 'mysql2';
 
 export async function getPublishers() {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<PublisherQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<PublisherQueryResult[]>(
       'SELECT * FROM publishers'
     );
 
@@ -28,14 +31,25 @@ export async function getPublishers() {
       message: 'Publisher fetched successfully!',
       payload: rows,
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function getPublisherById(id: number) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<PublisherQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<PublisherQueryResult[]>(
       'SELECT * FROM publishers WHERE id = ?',
       [id]
     );
@@ -54,15 +68,31 @@ export async function getPublisherById(id: number) {
       message: 'Publisher fetched successfully!',
       payload: rows[0],
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function createPublisher(bodyRequest: Publisher) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [result] = await connection.query<ResultSetHeader>(
-      'INSERT INTO publishers (name) VALUES (?)',
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [result] = await db.query<ResultSetHeader>(
+      `
+        INSERT INTO publishers (
+          name
+        )
+        VALUES (?)
+      `,
       bodyRequest.name
     );
 
@@ -83,6 +113,14 @@ export async function createPublisher(bodyRequest: Publisher) {
         name: bodyRequest.name,
       },
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
@@ -90,10 +128,13 @@ export async function updatePublisher(
   id: number,
   bodyRequest: Publisher
 ) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<PublisherQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<PublisherQueryResult[]>(
       'SELECT * FROM publishers WHERE id = ?',
       [id]
     );
@@ -106,10 +147,22 @@ export async function updatePublisher(
       };
     }
 
-    const [result] = await connection.query<ResultSetHeader>(
-      'UPDATE publishers SET name = ? WHERE id = ?',
+    const [result] = await db.query<ResultSetHeader>(
+      `
+        UPDATE publishers SET
+        name = ?
+        WHERE id = ?
+      `,
       [bodyRequest.name, id]
     );
+
+    // ? : check if the result is empty
+    if (result.affectedRows === 0) {
+      return {
+        status: 500,
+        message: 'Failed to update publisher',
+      };
+    }
 
     // ! : return the updated publisher
     return {
@@ -120,14 +173,25 @@ export async function updatePublisher(
         name: bodyRequest.name,
       },
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function deletePublisher(id: number) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<PublisherQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<PublisherQueryResult[]>(
       'SELECT * FROM publishers WHERE id = ?',
       [id]
     );
@@ -140,7 +204,7 @@ export async function deletePublisher(id: number) {
       };
     }
 
-    const [result] = await connection.query<ResultSetHeader>(
+    const [result] = await db.query<ResultSetHeader>(
       'DELETE FROM publishers WHERE id = ?',
       [id]
     );
@@ -150,5 +214,13 @@ export async function deletePublisher(id: number) {
       status: 200,
       message: `Publisher with id ${id} deleted successfully!`,
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }

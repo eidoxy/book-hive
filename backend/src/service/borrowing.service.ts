@@ -9,25 +9,26 @@ import { ResultSetHeader } from 'mysql2';
 export async function getBorrowings() {
   const db = await getConnection();
 
+  // ? : check if the database connection is successful
   if (!db) throw new Error('Cannot connect to database');
 
   try {
     const [rows] = await db.query<BorrowingQueryResult[]>(
       `
-      SELECT 
-      br.id,
-      m.name AS member,
-      b.title AS book,
-      a.name AS admin,
-      br.borrow_date,
-      br.return_date,
-      br.status
-      FROM borrowings br
-      JOIN members m ON br.members_id = m.id
-      JOIN books_detail bd ON br.books_detail_id = bd.id
-      JOIN books b ON bd.books_id = b.id
-      JOIN admins a ON br.admins_id = a.id
-      ORDER BY br.id
+        SELECT 
+        br.id,
+        m.name AS member,
+        b.title AS book,
+        a.name AS admin,
+        br.borrow_date,
+        br.return_date,
+        br.status
+        FROM borrowings br
+        JOIN members m ON br.members_id = m.id
+        JOIN books_detail bd ON br.books_detail_id = bd.id
+        JOIN books b ON bd.books_id = b.id
+        JOIN admins a ON br.admins_id = a.id
+        ORDER BY br.id
       `
     );
 
@@ -59,25 +60,26 @@ export async function getBorrowings() {
 export async function getBorrowingById(id: number) {
   const db = await getConnection();
 
+  // ? : check if the database connection is successful
   if (!db) throw new Error('Cannot connect to database');
 
   try {
     const [rows] = await db.query<BorrowingQueryResult[]>(
       `
-      SELECT 
-      br.id,
-      m.name AS member,
-      b.title AS book,
-      a.name AS admin,
-      br.borrow_date,
-      br.return_date,
-      br.status
-      FROM borrowings br
-      JOIN members m ON br.members_id = m.id
-      JOIN books_detail bd ON br.books_detail_id = bd.id
-      JOIN books b ON bd.books_id = b.id
-      JOIN admins a ON br.admins_id = a.id
-      WHERE br.id = ?
+        SELECT 
+        br.id,
+        m.name AS member,
+        b.title AS book,
+        a.name AS admin,
+        br.borrow_date,
+        br.return_date,
+        br.status
+        FROM borrowings br
+        JOIN members m ON br.members_id = m.id
+        JOIN books_detail bd ON br.books_detail_id = bd.id
+        JOIN books b ON bd.books_id = b.id
+        JOIN admins a ON br.admins_id = a.id
+        WHERE br.id = ?
       `,
       [id]
     );
@@ -110,12 +112,13 @@ export async function getBorrowingById(id: number) {
 export async function getBorrowingsLate() {
   const db = await getConnection();
 
+  // ? : check if the database connection is successful
   if (!db) throw new Error('Cannot connect to database');
 
   try {
     const [rows] = await db.query<BorrowingQueryResult[]>(
       `
-      SELECT 
+        SELECT 
         br.id,
         m.name AS member,
         b.title AS book,
@@ -123,13 +126,13 @@ export async function getBorrowingsLate() {
         br.borrow_date,
         br.return_date,
         br.status
-      FROM borrowings br
-      JOIN members m ON br.members_id = m.id
-      JOIN books_detail bd ON br.books_detail_id = bd.id
-      JOIN books b ON bd.books_id = b.id
-      JOIN admins a ON br.admins_id = a.id
-      WHERE br.status = 'late'
-      ORDER BY br.id
+        FROM borrowings br
+        JOIN members m ON br.members_id = m.id
+        JOIN books_detail bd ON br.books_detail_id = bd.id
+        JOIN books b ON bd.books_id = b.id
+        JOIN admins a ON br.admins_id = a.id
+        WHERE br.status = 'late'
+        ORDER BY br.id
       `
     );
 
@@ -161,13 +164,22 @@ export async function getBorrowingsLate() {
 export async function createBorrowing(borrowing: Borrowing) {
   const db = await getConnection();
 
+  // ? : check if the database connection is successful
   if (!db) throw new Error('Cannot connect to database');
 
   try {
     const [result] = await db.query<ResultSetHeader>(
       `
-      INSERT INTO borrowings (members_id, books_detail_id, admins_id, borrow_date, return_date, status)
-      VALUES (?, ?, ?, ?, ?, ?)`,
+        INSERT INTO borrowings (
+          members_id,
+          books_detail_id,
+          admins_id,
+          borrow_date,
+          return_date,
+          status
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+      `,
       [
         borrowing.members_id,
         borrowing.books_detail_id,
@@ -203,14 +215,20 @@ export async function updateBorrowing(
 ) {
   const db = await getConnection();
 
+  // ? : check if the database connection is successful
   if (!db) throw new Error('Cannot connect to database');
 
   try {
     const [result] = await db.query<ResultSetHeader>(
       `
-      UPDATE borrowings
-      SET members_id = ?, books_detail_id = ?, admins_id = ?, borrow_date = ?, return_date = ?, status = ?
-      WHERE id = ?
+        UPDATE borrowings SET
+        members_id = ?,
+        books_detail_id = ?,
+        admins_id = ?,
+        borrow_date = ?,
+        return_date = ?,
+        status = ?
+        WHERE id = ?
       `,
       [
         borrowing.members_id,
@@ -253,24 +271,27 @@ export async function updateBorrowing(
 export async function deleteBorrowing(id: number) {
   const db = await getConnection();
 
+  // ? : check if the database connection is successful
   if (!db) throw new Error('Cannot connect to database');
 
   try {
-    const [result] = await db.query<ResultSetHeader>(
-      `
-      DELETE FROM borrowings
-      WHERE id = ?
-      `,
+    const [rows] = await db.query<BorrowingQueryResult[]>(
+      `SELECT * FROM borrowings WHERE id = ?`,
       [id]
     );
 
     // ? : check if the borrowing is not found
-    if (result.affectedRows === 0) {
+    if (rows.length === 0) {
       return {
         status: 404,
         message: 'Borrowing not found',
       };
     }
+
+    const [result] = await db.query<ResultSetHeader>(
+      `DELETE FROM borrowings WHERE id = ?`,
+      [id]
+    );
 
     // ! : return the deleted borrowing
     return {

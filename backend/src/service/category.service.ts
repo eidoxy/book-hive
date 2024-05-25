@@ -7,9 +7,13 @@ import getConnection from '../database';
 import { ResultSetHeader } from 'mysql2';
 
 export async function getCategories() {
-  const connection = await getConnection();
-  if (connection) {
-    const [rows] = await connection.query<CategoryQueryResult[]>(
+  const db = await getConnection();
+
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<CategoryQueryResult[]>(
       'SELECT * FROM categories'
     );
 
@@ -27,13 +31,25 @@ export async function getCategories() {
       massage: 'Caegoires fetched successfully!',
       payload: rows,
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function getCategoryById(id: number) {
-  const connection = await getConnection();
-  if (connection) {
-    const [rows] = await connection.query<CategoryQueryResult[]>(
+  const db = await getConnection();
+
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<CategoryQueryResult[]>(
       'SELECT * FROM categories WHERE id = ?',
       [id]
     );
@@ -52,14 +68,31 @@ export async function getCategoryById(id: number) {
       message: 'Category fetched successfully!',
       payload: rows[0],
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function createCategory(bodyRequest: Category) {
-  const connection = await getConnection();
-  if (connection) {
-    const [result] = await connection.query<ResultSetHeader>(
-      'INSERT INTO categories (name) VALUES (?)',
+  const db = await getConnection();
+
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [result] = await db.query<ResultSetHeader>(
+      `
+        INSERT INTO categories (
+          name
+        ) 
+        VALUES (?)
+      `,
       bodyRequest.name
     );
 
@@ -80,6 +113,17 @@ export async function createCategory(bodyRequest: Category) {
         name: bodyRequest.name,
       },
     };
+  } catch (error) {
+    console.error(
+      'An error occurred while creating a category: ',
+      error
+    );
+    return {
+      status: 500,
+      message: 'Failed to create category',
+    };
+  } finally {
+    await db.end();
   }
 }
 
@@ -87,10 +131,13 @@ export async function updateCategory(
   id: number,
   bodyRequest: Category
 ) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<CategoryQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<CategoryQueryResult[]>(
       'SELECT * FROM categories WHERE id = ?',
       [id]
     );
@@ -103,8 +150,12 @@ export async function updateCategory(
       };
     }
 
-    const [result] = await connection.query<ResultSetHeader>(
-      'UPDATE categories SET name = ? WHERE id = ?',
+    const [result] = await db.query<ResultSetHeader>(
+      `
+        UPDATE categories SET
+        name = ?
+        WHERE id = ?
+      `,
       [bodyRequest.name, id]
     );
 
@@ -117,38 +168,50 @@ export async function updateCategory(
         name: bodyRequest.name,
       },
     };
+  } catch (error) {
+    console.error(
+      'An error occurred while updating a category: ',
+      error
+    );
+    return {
+      status: 500,
+      message: 'Failed to update category',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function deleteCategory(id: number) {
-  const connection = await getConnection();
+  const db = await getConnection();
+
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
 
   try {
-    if (connection) {
-      const [rows] = await connection.query<CategoryQueryResult[]>(
-        'SELECT * FROM categories WHERE id = ?',
-        [id]
-      );
+    const [rows] = await db.query<CategoryQueryResult[]>(
+      'SELECT * FROM categories WHERE id = ?',
+      [id]
+    );
 
-      // ? : check if there is no category with the id
-      if (rows.length === 0) {
-        return {
-          status: 404,
-          message: `Category with id ${id} not found`,
-        };
-      }
-
-      const [result] = await connection.query<ResultSetHeader>(
-        'DELETE FROM categories WHERE id = ?',
-        [id]
-      );
-
-      // ! : return the deleted category
+    // ? : check if there is no category with the id
+    if (rows.length === 0) {
       return {
-        status: 200,
-        message: `Category with id ${id} deleted successfully!`,
+        status: 404,
+        message: `Category with id ${id} not found`,
       };
     }
+
+    const [result] = await db.query<ResultSetHeader>(
+      'DELETE FROM categories WHERE id = ?',
+      [id]
+    );
+
+    // ! : return the deleted category
+    return {
+      status: 200,
+      message: `Category with id ${id} deleted successfully!`,
+    };
   } catch (error) {
     console.error(
       'An error occurred while deleting a category: ',
@@ -159,6 +222,6 @@ export async function deleteCategory(id: number) {
       message: 'Failed to delete category',
     };
   } finally {
-    await connection?.end();
+    await db.end();
   }
 }

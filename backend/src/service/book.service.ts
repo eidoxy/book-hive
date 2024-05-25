@@ -4,10 +4,13 @@ import getConnection from '../database';
 import { ResultSetHeader } from 'mysql2';
 
 export async function getBooks() {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<BookQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<BookQueryResult[]>(
       `
         SELECT 
         b.id, 
@@ -39,14 +42,25 @@ export async function getBooks() {
       message: 'Books fetched successfully!',
       payload: rows,
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function getBookById(id: number) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<BookQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<BookQueryResult[]>(
       `
         SELECT 
         b.id, 
@@ -80,17 +94,36 @@ export async function getBookById(id: number) {
       message: 'Book fetched successfully!',
       payload: rows[0],
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function createBook(bodyRequest: Book) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [result] = await connection.query<ResultSetHeader>(
-      `INSERT INTO books 
-      (title, cover, description, categories_id, shelves_id, total_page) 
-      VALUES (?, ?, ?, ?, ?, ?)`,
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [result] = await db.query<ResultSetHeader>(
+      `
+        INSERT INTO books (
+          title,
+          cover,
+          description,
+          categories_id,
+          shelves_id,
+          total_page
+        ) 
+        VALUES (?, ?, ?, ?, ?, ?)
+      `,
       [
         bodyRequest.title,
         bodyRequest.cover,
@@ -117,14 +150,25 @@ export async function createBook(bodyRequest: Book) {
         ...bodyRequest,
       },
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function updateBook(id: number, bodyRequest: Book) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<BookQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<BookQueryResult[]>(
       'SELECT * FROM books WHERE id = ?',
       [id]
     );
@@ -137,8 +181,17 @@ export async function updateBook(id: number, bodyRequest: Book) {
       };
     }
 
-    const [result] = await connection.query<ResultSetHeader>(
-      'UPDATE books SET title = ?, cover = ?, description = ?, categories_id = ?, shelves_id = ?, total_page = ? WHERE id = ?',
+    const [result] = await db.query<ResultSetHeader>(
+      `
+        UPDATE books SET 
+        title = ?,
+        cover = ?,
+        description = ?,
+        categories_id = ?,
+        shelves_id = ?,
+        total_page = ?
+        WHERE id = ?
+      `,
       [
         bodyRequest.title,
         bodyRequest.cover,
@@ -166,14 +219,25 @@ export async function updateBook(id: number, bodyRequest: Book) {
         ...bodyRequest,
       },
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function deleteBook(id: number) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<BookQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<BookQueryResult[]>(
       'SELECT * FROM books WHERE id = ?',
       [id]
     );
@@ -186,7 +250,7 @@ export async function deleteBook(id: number) {
       };
     }
 
-    const [result] = await connection.query<ResultSetHeader>(
+    const [result] = await db.query<ResultSetHeader>(
       'DELETE FROM books WHERE id = ?',
       [id]
     );
@@ -204,5 +268,13 @@ export async function deleteBook(id: number) {
       status: 200,
       message: 'Book deleted successfully!',
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }

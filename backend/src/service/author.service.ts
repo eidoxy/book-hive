@@ -4,10 +4,13 @@ import getConnection from '../database';
 import { ResultSetHeader } from 'mysql2';
 
 export async function getAuthors() {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<AuthorQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<AuthorQueryResult[]>(
       'SELECT * FROM authors'
     );
 
@@ -25,14 +28,25 @@ export async function getAuthors() {
       message: 'Authors fetched successfully!',
       payload: rows,
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function getAuthorById(id: number) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<AuthorQueryResult[]>(
+  // ? :  check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<AuthorQueryResult[]>(
       'SELECT * FROM authors WHERE id = ?',
       [id]
     );
@@ -51,15 +65,32 @@ export async function getAuthorById(id: number) {
       message: 'Author fetched successfully!',
       payload: rows[0],
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function createAuthor(bodyRequest: Author) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [result] = await connection.query<ResultSetHeader>(
-      'INSERT INTO authors (name, description) VALUES (?, ?)',
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [result] = await db.query<ResultSetHeader>(
+      `
+        INSERT INTO authors (
+          name,
+          description
+        )
+        VALUES (?, ?)
+      `,
       [bodyRequest.name, bodyRequest.description]
     );
 
@@ -81,14 +112,25 @@ export async function createAuthor(bodyRequest: Author) {
         description: bodyRequest.description,
       },
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function updateAuthor(id: number, bodyRequest: Author) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<AuthorQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<AuthorQueryResult[]>(
       'SELECT * FROM authors WHERE id = ?',
       [id]
     );
@@ -101,8 +143,13 @@ export async function updateAuthor(id: number, bodyRequest: Author) {
       };
     }
 
-    const [result] = await connection.query<ResultSetHeader>(
-      'UPDATE authors SET name = ?, description = ? WHERE id = ?',
+    const [result] = await db.query<ResultSetHeader>(
+      `
+        UPDATE authors SET
+        name = ?,
+        description = ?
+        WHERE id = ?
+      `,
       [bodyRequest.name, bodyRequest.description, id]
     );
 
@@ -116,14 +163,25 @@ export async function updateAuthor(id: number, bodyRequest: Author) {
         description: bodyRequest.description,
       },
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function deleteAuthor(id: number) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<AuthorQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<AuthorQueryResult[]>(
       'SELECT * FROM authors WHERE id = ?',
       [id]
     );
@@ -136,7 +194,7 @@ export async function deleteAuthor(id: number) {
       };
     }
 
-    const [result] = await connection.query<ResultSetHeader>(
+    const [result] = await db.query<ResultSetHeader>(
       'DELETE FROM authors WHERE id = ?',
       [id]
     );
@@ -146,5 +204,13 @@ export async function deleteAuthor(id: number) {
       status: 200,
       message: `Author deleted with id ${id} successfully!`,
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }

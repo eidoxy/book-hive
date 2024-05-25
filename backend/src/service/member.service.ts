@@ -7,10 +7,13 @@ import { ResultSetHeader } from 'mysql2';
 import { createToken } from '../utils/token';
 
 export async function registerMember(bodyRequest: Member) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rowsEmail] = await connection.query<MemberQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rowsEmail] = await db.query<MemberQueryResult[]>(
       'SELECT * FROM members WHERE email = ?',
       [bodyRequest.email]
     );
@@ -23,7 +26,7 @@ export async function registerMember(bodyRequest: Member) {
       };
     }
 
-    const [rowsPhone] = await connection.query<MemberQueryResult[]>(
+    const [rowsPhone] = await db.query<MemberQueryResult[]>(
       'SELECT * FROM members WHERE phone = ?',
       [bodyRequest.phone]
     );
@@ -40,8 +43,21 @@ export async function registerMember(bodyRequest: Member) {
     const hashedPassword = await hash(bodyRequest.password, 10);
 
     // ? : insert the member
-    const [result] = await connection.query<ResultSetHeader>(
-      'INSERT INTO members (name, email, password, member_type, parent_number, phone, address, major, department) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    const [result] = await db.query<ResultSetHeader>(
+      `
+        INSERT INTO members (
+          name,
+          email,
+          password,
+          member_type,
+          parent_number,
+          phone,
+          address,
+          major,
+          department
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `,
       [
         bodyRequest.name,
         bodyRequest.email,
@@ -68,14 +84,25 @@ export async function registerMember(bodyRequest: Member) {
       status: 201,
       message: 'Member registered successfully',
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function loginMember(bodyReqeust: Member) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rowsEmail] = await connection.query<MemberQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rowsEmail] = await db.query<MemberQueryResult[]>(
       'SELECT * FROM members WHERE email = ?',
       [bodyReqeust.email]
     );
@@ -83,8 +110,8 @@ export async function loginMember(bodyReqeust: Member) {
     // ? : check if member with email exists
     if (rowsEmail.length === 0) {
       return {
-        status: 404,
-        message: `Email ${bodyReqeust.email} not found!`,
+        status: 401,
+        message: `Email is incorrect!`,
       };
     }
 
@@ -99,7 +126,7 @@ export async function loginMember(bodyReqeust: Member) {
     if (!isPasswordMatch) {
       return {
         status: 401,
-        message: 'Incorrect password',
+        message: 'Password is incorrect!',
       };
     }
 
@@ -127,14 +154,25 @@ export async function loginMember(bodyReqeust: Member) {
         token,
       },
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function getMembers() {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<MemberQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<MemberQueryResult[]>(
       'SELECT * FROM members'
     );
 
@@ -149,17 +187,38 @@ export async function getMembers() {
     // ! : return the members
     return {
       status: 200,
-      message: 'Members found',
-      payload: rows,
+      message: 'Members fetched successfully',
+      payload: {
+        id: rows[0].id,
+        name: rows[0].name,
+        email: rows[0].email,
+        member_type: rows[0].member_type,
+        parent_number: rows[0].parent_number,
+        phone: rows[0].phone,
+        address: rows[0].address,
+        major: rows[0].major,
+        department: rows[0].department,
+      },
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function getMemberById(id: number) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<MemberQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<MemberQueryResult[]>(
       'SELECT * FROM members WHERE id = ?',
       [id]
     );
@@ -175,17 +234,28 @@ export async function getMemberById(id: number) {
     // ! : return the member
     return {
       status: 200,
-      message: 'Member found',
+      message: 'Member fetched successfully',
       payload: rows[0],
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function updateMember(id: number, bodyRequest: Member) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<MemberQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<MemberQueryResult[]>(
       'SELECT * FROM members WHERE id = ?',
       [id]
     );
@@ -199,8 +269,19 @@ export async function updateMember(id: number, bodyRequest: Member) {
     }
 
     // ! : update the member
-    const [result] = await connection.query<ResultSetHeader>(
-      'UPDATE members SET name = ?, email = ?, member_type = ?, parent_number = ?, phone = ?, address = ?, major = ?, department = ? WHERE id = ?',
+    const [result] = await db.query<ResultSetHeader>(
+      `
+        UPDATE members SET
+        name = ?,
+        email = ?,
+        member_type = ?,
+        parent_number = ?,
+        phone = ?,
+        address = ?,
+        major = ?,
+        department = ?
+        WHERE id = ?
+      `,
       [
         bodyRequest.name,
         bodyRequest.email,
@@ -227,14 +308,25 @@ export async function updateMember(id: number, bodyRequest: Member) {
       status: 200,
       message: 'Member updated successfully',
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
 
 export async function deleteMember(id: number) {
-  const connection = await getConnection();
+  const db = await getConnection();
 
-  if (connection) {
-    const [rows] = await connection.query<MemberQueryResult[]>(
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [rows] = await db.query<MemberQueryResult[]>(
       'SELECT * FROM members WHERE id = ?',
       [id]
     );
@@ -248,7 +340,7 @@ export async function deleteMember(id: number) {
     }
 
     // ! : delete the member
-    const [result] = await connection.query<ResultSetHeader>(
+    const [result] = await db.query<ResultSetHeader>(
       'DELETE FROM members WHERE id = ?',
       [id]
     );
@@ -264,7 +356,15 @@ export async function deleteMember(id: number) {
     // ! : return the member
     return {
       status: 200,
-      message: 'Member deleted successfully',
+      message: `Member ${rows} deleted successfully`,
     };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
   }
 }
