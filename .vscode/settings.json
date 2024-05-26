@@ -1,3 +1,4 @@
 {
-  "prettier.printWidth": 70
+  "prettier.printWidth": 75,
+  "editor.tabSize": 2
 }

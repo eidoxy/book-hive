@@ -2,7 +2,7 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
   theme: {
     fontFamily: {
@@ -22,6 +22,7 @@ export default {
       bodydark2: '#8A99AF',
       primary: '#B46C10',
       'primary-2': '#3C50E0',
+      'primary-dark': '#8E550C',
       secondary: '#FDBA21',
       stroke: '#E2E8F0',
       gray: '#EBECF5',
