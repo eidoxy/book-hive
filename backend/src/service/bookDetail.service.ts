@@ -27,7 +27,7 @@ export async function getBookDetails() {
         a.name AS author, 
         p.name AS publisher, 
         bd.published_date, 
-        bd.isbn, 
+        bd.isbn,
         bd.created_at, 
         bd.updated_at 
         FROM books_detail bd
@@ -137,16 +137,14 @@ export async function createBookDetail(bodyRequest: BookDetail) {
           publishers_id,
           published_date,
           isbn,
-          stocks_id
         ) 
-        VALUES (?, ?, ?, ?, ?, ?)`,
+        VALUES (?, ?, ?, ?, ?)`,
       [
         bodyRequest.books_id,
         bodyRequest.authors_id,
         bodyRequest.publishers_id,
         bodyRequest.published_date,
         bodyRequest.isbn,
-        bodyRequest.stocks_id,
       ]
     );
 
@@ -208,7 +206,6 @@ export async function updateBookDetail(
         publishers_id = ?,
         published_date = ?,
         isbn = ?,
-        stocks_id = ?
         WHERE id = ?
       `,
       [
@@ -217,7 +214,6 @@ export async function updateBookDetail(
         bodyRequest.publishers_id,
         bodyRequest.published_date,
         bodyRequest.isbn,
-        bodyRequest.stocks_id,
         id,
       ]
     );

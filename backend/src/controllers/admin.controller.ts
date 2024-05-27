@@ -11,10 +11,7 @@ import {
 } from '../service/admin.service';
 import { serverError } from '../utils/response';
 
-export async function loginAdminController(
-  req: Request,
-  res: Response
-) {
+export async function loginAdminController(req: Request, res: Response) {
   const admin = req.body as Admin;
 
   // ? : check if email and password are provided
@@ -30,28 +27,22 @@ export async function loginAdminController(
 
     // ! : set token in cookie if login is successful
     if (result.status === 200 && result.payload) {
-      res.cookie('request_token', result.payload.token, {
+      res.cookie('token', result.payload.token, {
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        // sameSite: 'none',
       });
     }
 
     return res.status(result.status).send(result);
   } catch (error) {
-    console.error(
-      'An error occurred while logging in admin: ',
-      error
-    );
+    console.error('An error occurred while logging in admin: ', error);
     return res.status(serverError.status).send(serverError);
   }
 }
 
-export async function createAdminController(
-  req: Request,
-  res: Response
-) {
+export async function createAdminController(req: Request, res: Response) {
   const admin = req.body as Admin;
 
   // ? : check if name, email, and password are provided
@@ -82,10 +73,7 @@ export async function createAdminController(
   }
 }
 
-export async function getAdminsController(
-  req: Request,
-  res: Response
-) {
+export async function getAdminsController(req: Request, res: Response) {
   try {
     const result = await getAdmins();
 
@@ -101,18 +89,12 @@ export async function getAdminsController(
       throw new Error('Invalid status code');
     }
   } catch (error) {
-    console.error(
-      'An error occurred while getting all admins: ',
-      error
-    );
+    console.error('An error occurred while getting all admins: ', error);
     return res.status(serverError.status).send(serverError);
   }
 }
 
-export async function getAdminByIdController(
-  req: Request,
-  res: Response
-) {
+export async function getAdminByIdController(req: Request, res: Response) {
   const id = parseInt(req.params.id);
 
   // ? : check if id is not a number
@@ -138,18 +120,12 @@ export async function getAdminByIdController(
       throw new Error('Invalid status code');
     }
   } catch (error) {
-    console.error(
-      'An error occurred while getting admin by id: ',
-      error
-    );
+    console.error('An error occurred while getting admin by id: ', error);
     return res.status(serverError.status).send(serverError);
   }
 }
 
-export async function updateAdminController(
-  req: Request,
-  res: Response
-) {
+export async function updateAdminController(req: Request, res: Response) {
   const id = parseInt(req.params.id);
 
   // ? : check if id is not a number
@@ -190,10 +166,7 @@ export async function updateAdminController(
   }
 }
 
-export async function deleteAdminController(
-  req: Request,
-  res: Response
-) {
+export async function deleteAdminController(req: Request, res: Response) {
   const id = parseInt(req.params.id);
 
   // ? : check if id is not a number

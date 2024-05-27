@@ -54,6 +54,7 @@ export async function loginAdmin(bodyRequest: Admin) {
       status: 200,
       message: 'Login successful',
       payload: {
+        id: admin.id,
         name: admin.name,
         email: admin.email,
         phone: admin.phone,
@@ -188,10 +189,7 @@ export async function createAdmin(bodyRequest: Admin) {
     }
 
     // ! : hash the password
-    const hashedPassword = await bcrypt.hash(
-      bodyRequest.password,
-      10
-    );
+    const hashedPassword = await bcrypt.hash(bodyRequest.password, 10);
     bodyRequest.password = hashedPassword;
 
     const [result] = await db.query<ResultSetHeader>(
@@ -266,10 +264,7 @@ export async function updateAdmin(id: number, bodyRequest: Admin) {
     }
 
     // ! : hash the password
-    const hashedPassword = await bcrypt.hash(
-      bodyRequest.password,
-      10
-    );
+    const hashedPassword = await bcrypt.hash(bodyRequest.password, 10);
     bodyRequest.password = hashedPassword;
 
     const [result] = await db.query<ResultSetHeader>(

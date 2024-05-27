@@ -52,11 +52,10 @@ export async function registerMember(bodyRequest: Member) {
           member_type,
           parent_number,
           phone,
-          address,
           major,
           department
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         bodyRequest.name,
@@ -65,7 +64,6 @@ export async function registerMember(bodyRequest: Member) {
         bodyRequest.member_type,
         bodyRequest.parent_number,
         bodyRequest.phone,
-        bodyRequest.address,
         bodyRequest.major,
         bodyRequest.department,
       ]

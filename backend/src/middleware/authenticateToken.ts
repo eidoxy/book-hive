@@ -6,14 +6,7 @@ export function authenticateToken(
   res: Response,
   next: NextFunction
 ) {
-  const token: undefined | string = req.cookies.request_token;
-
-  if (!token) {
-    return res.status(401).send({
-      status: 401,
-      message: 'Unauthorized: No token provided',
-    });
-  }
+  const token: undefined | string = req.cookies.token;
 
   if (!token) {
     return res.status(401).send({

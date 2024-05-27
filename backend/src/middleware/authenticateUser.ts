@@ -6,12 +6,10 @@ export function authenticateUser(
   res: Response,
   next: NextFunction
 ) {
-  const token = req.cookies.request_token;
+  const token = req.cookies.token;
 
   try {
-    const decodedToken = decodeToken<{ role: 'admin' | 'user' }>(
-      token
-    );
+    const decodedToken = decodeToken<{ role: 'admin' | 'user' }>(token);
 
     if (!decodedToken) {
       return res.status(401).send({
