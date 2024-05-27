@@ -7,7 +7,6 @@ export interface BookDetail {
   publishers_id: number;
   published_date: Date;
   isbn: string;
-  stocks_id: number;
 }
 
 export interface BookDetailQueryResult extends RowDataPacket {
@@ -17,5 +16,4 @@ export interface BookDetailQueryResult extends RowDataPacket {
   publishers_id: number;
   published_date: Date;
   isbn: string;
-  stocks_id: number;
 }
