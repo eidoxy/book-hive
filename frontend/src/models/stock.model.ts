@@ -1,5 +1,5 @@
 export interface Stock {
   id?: number;
-  books_id: string;
+  books: string;
   quantity: string;
 }

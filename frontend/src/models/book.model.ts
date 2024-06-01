@@ -1,9 +1,9 @@
 export interface Book {
   id?: number;
   title: string;
-  cover: Buffer;
+  cover?: string;
   description: string;
-  categories_id: number;
-  shelves_id: number;
-  pages: number;
+  category?: string;
+  shelf?: string;
+  total_page: number;
 }
