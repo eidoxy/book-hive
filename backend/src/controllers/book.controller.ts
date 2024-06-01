@@ -4,16 +4,14 @@ import { Book } from '../models/book.model';
 import {
   getBooks,
   getBookById,
+  getBookRecomendation,
   createBook,
   updateBook,
   deleteBook,
 } from '../service/book.service';
 import { serverError } from '../utils/response';
 
-export async function getBooksController(
-  req: Request,
-  res: Response
-) {
+export async function getBooksController(req: Request, res: Response) {
   try {
     const result = await getBooks();
 
@@ -29,18 +27,12 @@ export async function getBooksController(
       throw new Error('Invalid status code');
     }
   } catch (error) {
-    console.error(
-      'An error occurred while getting all books: ',
-      error
-    );
+    console.error('An error occurred while getting all books: ', error);
     return res.status(serverError.status).send(serverError);
   }
 }
 
-export async function getBookByIdController(
-  req: Request,
-  res: Response
-) {
+export async function getBookByIdController(req: Request, res: Response) {
   const id = Number(req.params.id);
 
   // ? : check if id is not a number
@@ -66,19 +58,41 @@ export async function getBookByIdController(
       throw new Error('Invalid status code');
     }
   } catch (error) {
+    console.error('An error occurred while getting a book by id: ', error);
+    return res.status(serverError.status).send(serverError);
+  }
+}
+
+export async function getBookRecomendationController(
+  req: Request,
+  res: Response
+) {
+  try {
+    const result = await getBookRecomendation();
+
+    // ? : check if result doesn't have status or invalid status
+    if (
+      result.status &&
+      result.status >= 200 &&
+      result.status < 300 &&
+      typeof result.status == 'number'
+    ) {
+      return res.status(result.status).send(result);
+    } else {
+      throw new Error('Invalid status code');
+    }
+  } catch (error) {
     console.error(
-      'An error occurred while getting a book by id: ',
+      'An error occurred while getting a book with stock: ',
       error
     );
     return res.status(serverError.status).send(serverError);
   }
 }
 
-export async function createBookController(
-  req: Request,
-  res: Response
-) {
+export async function createBookController(req: Request, res: Response) {
   const bodyRequest: Book = req.body;
+  const file = req.file as Express.Multer.File;
 
   // ? : check if title and description is empty
   if (!bodyRequest.title || !bodyRequest.description) {
@@ -89,7 +103,7 @@ export async function createBookController(
   }
 
   try {
-    const result = await createBook(bodyRequest);
+    const result = await createBook(bodyRequest, file);
 
     // ? : check if result doesn't have status or invalid status
     if (
@@ -108,10 +122,7 @@ export async function createBookController(
   }
 }
 
-export async function updateBookController(
-  req: Request,
-  res: Response
-) {
+export async function updateBookController(req: Request, res: Response) {
   const id = Number(req.params.id);
 
   // ? : check if id is not a number
@@ -152,10 +163,7 @@ export async function updateBookController(
   }
 }
 
-export async function deleteBookController(
-  req: Request,
-  res: Response
-) {
+export async function deleteBookController(req: Request, res: Response) {
   const id = Number(req.params.id);
 
   // ? : check if id is not a number

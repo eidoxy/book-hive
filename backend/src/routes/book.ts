@@ -1,10 +1,13 @@
 import { Router } from 'express';
+import multer from 'multer';
+import storage from '../utils/storage';
 import { authenticateToken } from '../middleware/authenticateToken';
 import { authenticateUser } from '../middleware/authenticateUser';
 
 import {
   getBooksController,
   getBookByIdController,
+  getBookRecomendationController,
   createBookController,
   updateBookController,
   deleteBookController,
@@ -12,14 +15,16 @@ import {
 
 const publicRoutes = Router();
 const protectedRoutes = Router();
+const upload = multer({ storage });
 
 publicRoutes
   .get('/', getBooksController)
+  .get('/recommendation', getBookRecomendationController)
   .get('/:id', getBookByIdController);
 
 protectedRoutes
   .use(authenticateToken, authenticateUser)
-  .post('/create', createBookController)
+  .post('/create', upload.single('cover'), createBookController)
   .put('/update/:id', updateBookController)
   .delete('/delete/:id', deleteBookController);
 
