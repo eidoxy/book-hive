@@ -73,7 +73,7 @@ const ChartTwo: React.FC = () => {
   const [state, setState] = useState<ChartTwoState>({
     series: [
       {
-        name: 'Pengunjung',
+        name: 'Visitor',
         data: [44, 55, 41, 67, 22, 43, 65],
       },
     ],
@@ -84,7 +84,7 @@ const ChartTwo: React.FC = () => {
       <div className="mb-2 justify-between gap-4 sm:flex">
         <div>
           <h4 className="text-xl font-semibold text-black dark:text-white">
-            Total pengunjung mingguan
+            Total visitor per week
           </h4>
         </div>
         <div>

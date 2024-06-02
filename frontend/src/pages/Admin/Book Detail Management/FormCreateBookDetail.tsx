@@ -4,6 +4,9 @@ import axios from 'axios';
 
 import Breadcrumb from '../../../components/Breadcrumb';
 import formatDate from '../../../utils/format';
+import { Book } from '../../../models/book.model';
+import { Author } from '../../../models/author.model';
+import { Publisher } from '../../../models/publisher.model';
 
 const FormCreateDetailBook = () => {
   const [bookDetail, setBookDetail] = useState({
@@ -14,7 +17,6 @@ const FormCreateDetailBook = () => {
   const [selectedBook, setSelectedBook] = useState('');
   const [selectedAuthor, setSelectedAuthor] = useState('');
   const [selectedPublisher, setSelectedPublisher] = useState('');
-  const [selectedStock, setSelectedStock] = useState('');
 
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
@@ -144,7 +146,7 @@ const FormCreateDetailBook = () => {
                       required
                     >
                       <option value="">Select Book</option>
-                      {bookDetail.books.map((book: any) => (
+                      {bookDetail.books.map((book: Book) => (
                         <option key={book.id} value={book.id}>
                           {book.title}
                         </option>
@@ -172,7 +174,7 @@ const FormCreateDetailBook = () => {
                       required
                     >
                       <option value="">Select Author</option>
-                      {bookDetail.authors.map((author: any) => (
+                      {bookDetail.authors.map((author: Author) => (
                         <option key={author.id} value={author.id}>
                           {author.name}
                         </option>
@@ -200,11 +202,13 @@ const FormCreateDetailBook = () => {
                       required
                     >
                       <option value="">Select Publisher</option>
-                      {bookDetail.publishers.map((publisher: any) => (
-                        <option key={publisher.id} value={publisher.id}>
-                          {publisher.name}
-                        </option>
-                      ))}
+                      {bookDetail.publishers.map(
+                        (publisher: Publisher) => (
+                          <option key={publisher.id} value={publisher.id}>
+                            {publisher.name}
+                          </option>
+                        )
+                      )}
                     </select>
                     {error && <p className="text-danger">{error}</p>}
                   </div>

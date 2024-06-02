@@ -1,27 +1,77 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
+import axios from 'axios';
+
 import Loader from '../../common/Loader';
+import { BookDetail } from '../../models/bookDetail.model';
 
 const BookDetailTable = () => {
-  const [metadatas, setMetadatas] = useState<any>([]);
+  const [data, setData] = useState<BookDetail[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [itemOffset, setItemOffset] = useState(0);
 
   const itemsPerPage = 5;
   const endOffset = itemOffset + itemsPerPage;
-  const currentItems = metadatas.slice(itemOffset, endOffset);
-  const pageCount = Math.ceil(metadatas.length / itemsPerPage);
+  const currentItems = data.slice(itemOffset, endOffset);
+  const pageCount = Math.ceil(data.length / itemsPerPage);
   let currentPage = itemOffset / itemsPerPage;
+
+  const formatDate = (date: string) => {
+    const newDate = new Date(date);
+    return newDate.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
+  };
+
   useEffect(() => {
     setTimeout(() => setLoading(false), 1000);
   }, []);
 
+  useEffect(() => {
+    const fetchBooksDetail = async () => {
+      try {
+        const response = await axios.get(
+          'http://localhost:3000/api/book-detail'
+        );
+
+        if (response.status === 200) {
+          setData(response.data.payload);
+        }
+      } catch (error) {
+        console.error('Error fetching books detail:', error);
+      }
+    };
+
+    fetchBooksDetail();
+  }, []);
+
   // Invoke when user click to request another page.
   const handlePageClick = (event: any) => {
-    const newOffset = (event.selected * itemsPerPage) % metadatas.length;
+    const newOffset = (event.selected * itemsPerPage) % data.length;
     setItemOffset(newOffset);
     currentPage = event.selected;
+  };
+
+  const handleDelete = async (id: number, event: React.MouseEvent) => {
+    event.preventDefault();
+
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/api/book-detail/delete/${id}`
+      );
+
+      if (response.status === 200) {
+        const updatedData = data.filter(
+          (item: BookDetail) => item.id !== id
+        );
+        setData(updatedData);
+      }
+    } catch (error) {
+      console.error('Error deleting book detail:', error);
+    }
   };
 
   return (
@@ -33,10 +83,10 @@ const BookDetailTable = () => {
           </h3>
 
           <NavLink
-            to="/data-management/create"
+            to="/admin/book-detail-management/create"
             className={`group max-h-12 rounded-full flex items-center gap-2.5 py-2 px-6 font-medium text-white duration-300 ease-in-out bg-primary hover:bg-primarydark dark:hover:bg-primarydark`}
           >
-            + Tambah
+            + Create
           </NavLink>
         </div>
 
@@ -68,7 +118,7 @@ const BookDetailTable = () => {
                       Publisher
                     </h5>
                   </th>
-                  <th className="min-w-[150px] py-4 px-4 xl:px-8 xl:py-6">
+                  <th className="min-w-[200px] py-4 px-4 xl:px-8 xl:py-6">
                     <h5 className="text-sm font-medium uppercase xsm:text-base">
                       Published Date
                     </h5>
@@ -76,11 +126,6 @@ const BookDetailTable = () => {
                   <th className="min-w-[150px] py-4 px-4 xl:px-8 xl:py-6">
                     <h5 className="text-sm font-medium uppercase xsm:text-base">
                       ISBN
-                    </h5>
-                  </th>
-                  <th className="min-w-[150px] py-4 px-4 xl:px-8 xl:py-6">
-                    <h5 className="text-sm font-medium uppercase xsm:text-base">
-                      Stock
                     </h5>
                   </th>
                   <th className="py-4 px-4 xl:px-8 xl:py-6">
@@ -91,41 +136,41 @@ const BookDetailTable = () => {
                 </tr>
               </thead>
               <tbody>
-                {/* {currentItems.map((items: any, id: any) => (
+                {currentItems.map((items: BookDetail, id: number) => (
                   <tr key={id}>
-                    <td className="border-b justify-center items-center border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:px-8 xl:py-6">
+                    <td className="border-b justify-center items-center border-[#eee] py-5 px-4 pl-5 dark:border-strokedark xl:px-8 xl:py-6 xl:pl-10">
                       <p className="text-black dark:text-white">
                         {currentPage * itemsPerPage + id + 1}
                       </p>
                     </td>
-                    <td className="border-b justify-center items-center border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:px-8 xl:py-6">
+                    <td className="max-w-[80px] border-b justify-center items-center border-[#eee] py-5 px-4 pl-5 dark:border-strokedark xl:px-8 xl:py-6 xl:pl-10">
                       <p className="text-black dark:text-white">
-                        {items.filename}
+                        {items.title}
                       </p>
                     </td>
-                    <td className="border-b justify-center items-center border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:px-8 xl:py-6">
-                      <p className="text-black dark:text-white">
-                        {items.description}
+                    <td className="max-w-[200px]  border-b justify-center items-center border-[#eee] py-5 px-4 pl-5 dark:border-strokedark xl:px-8 xl:py-6 xl:pl-10">
+                      <p className="overflow-ellipsis overflow-hidden text-black dark:text-white">
+                        {items.author}
                       </p>
                     </td>
-                    <td className="border-b justify-center items-center border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:px-8 xl:py-6">
-                      <p className="text-black dark:text-white">
-                        {items.timestamp}
+                    <td className="max-w-[200px]  border-b justify-center items-center border-[#eee] py-5 px-4 pl-5 dark:border-strokedark xl:px-8 xl:py-6 xl:pl-10">
+                      <p className="overflow-ellipsis overflow-hidden text-black dark:text-white">
+                        {items.publisher}
                       </p>
                     </td>
-                    <td className="border-b justify-center items-center border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:px-8 xl:py-6">
-                      <p className="text-black dark:text-white">
-                        {items.pdf_size}
+                    <td className="max-w-[200px]  border-b justify-center items-center border-[#eee] py-5 px-4 pl-5 dark:border-strokedark xl:px-8 xl:py-6 xl:pl-10">
+                      <p className="overflow-ellipsis overflow-hidden text-black dark:text-white">
+                        {formatDate(items.published_date)}
                       </p>
                     </td>
-                    <td className="border-b justify-center items-center border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:px-8 xl:py-6">
+                    <td className="max-w-[200px]  border-b justify-center items-center border-[#eee] py-5 px-4 pl-5 dark:border-strokedark xl:px-8 xl:py-6 xl:pl-10">
+                      <p className="overflow-ellipsis overflow-hidden text-black dark:text-white">
+                        {items.isbn}
+                      </p>
+                    </td>
+                    <td className="border-b justify-center items-center border-[#eee] py-5 px-4 pl-5 dark:border-strokedark xl:px-8 xl:py-6 xl:pl-10">
                       <div className="flex items-center space-x-3.5">
-                        <button
-                          className="hover:text-primary"
-                          onClick={() =>
-                            handleOpenDocument(items.pdf_path)
-                          }
-                        >
+                        <button className="hover:text-primary transition">
                           <svg
                             className="fill-current"
                             width="18"
@@ -139,25 +184,10 @@ const BookDetailTable = () => {
                         </button>
 
                         <button
-                          className="hover:text-primary"
-                          onClick={() =>
-                            window.open(items.pdf_path, '_blank')
+                          onClick={(event) =>
+                            handleDelete(items.id ?? 0, event)
                           }
-                        >
-                          <svg
-                            className="fill-current"
-                            width="18"
-                            height="18"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                          >
-                            <path d="M256 464a208 208 0 1 1 0-416 208 208 0 1 1 0 416zM256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zM376.9 294.6c4.5-4.2 7.1-10.1 7.1-16.3c0-12.3-10-22.3-22.3-22.3H304V160c0-17.7-14.3-32-32-32l-32 0c-17.7 0-32 14.3-32 32v96H150.3C138 256 128 266 128 278.3c0 6.2 2.6 12.1 7.1 16.3l107.1 99.9c3.8 3.5 8.7 5.5 13.8 5.5s10.1-2 13.8-5.5l107.1-99.9z" />
-                          </svg>
-                        </button>
-
-                        <button
-                          className="hover:text-danger"
+                          className="hover:text-danger transition"
                         >
                           <svg
                             className="fill-current"
@@ -173,7 +203,7 @@ const BookDetailTable = () => {
                       </div>
                     </td>
                   </tr>
-                ))} */}
+                ))}
               </tbody>
             </table>
           )}
@@ -187,9 +217,9 @@ const BookDetailTable = () => {
           previousLabel="< previous"
           renderOnZeroPageCount={null}
           containerClassName="inline-flex -space-x-px text-base h-10 my-5"
-          pageLinkClassName="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 border border-e-0 border-greendark hover:bg-primary hover:text-white dark:border-bodydark2 dark:text-gray-400 dark:hover:bg-primary dark:hover:text-white"
-          previousLinkClassName="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 border border-e-0 border-greendark rounded-s-lg hover:bg-primary hover:text-white dark:border-bodydark2 dark:text-gray-400 dark:hover:bg-primary dark:hover:text-white"
-          nextLinkClassName="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 border border-greendark rounded-e-lg hover:bg-primary hover:text-white dark:border-bodydark2 dark:text-gray-400 dark:hover:bg-primary dark:hover:text-white"
+          pageLinkClassName="flex items-center justify-center px-4 h-10 ms-0 leading-tight border border-e-0 border-stroke transition hover:bg-primary hover:text-white dark:border-bodydark2 dark:hover:bg-primary dark:hover:text-white"
+          previousLinkClassName="flex items-center justify-center px-4 h-10 ms-0 leading-tight border border-e-0 border-stroke transition rounded-s-lg hover:bg-primary hover:text-white dark:border-bodydark2 dark:hover:bg-primary dark:hover:text-white"
+          nextLinkClassName="flex items-center justify-center px-4 h-10 leading-tight border border-stroke transition rounded-e-lg hover:bg-primary hover:text-white dark:border-bodydark2 dark:hover:bg-primary dark:hover:text-white"
           activeClassName="text-white border-green bg-primary dark:bg-primary dark:text-white"
         />
       </form>

@@ -12,8 +12,11 @@ import shelfRoutes from './shelf';
 import stockRoutes from './stock';
 
 const Dashboard = lazy(() => import('../pages/Admin/Dashboard'));
-
 const Settings = lazy(() => import('../pages/Settings'));
+const BorrowingBooks = lazy(() => import('../pages/BorrowingBooks'));
+const BorrowingDetails = lazy(() => import('../pages/BorrowingDetails'));
+const Profile = lazy(() => import('../pages/Member/Profile'));
+const Borrowing = lazy(() => import('../pages/Member/MemberBorrowing'));
 
 const privateRoutes = [
   {
@@ -30,15 +33,29 @@ const privateRoutes = [
 
 const publicRoutes = [
   {
-    path: '/all-books',
-    title: 'All Books',
-    component: '',
+    path: '/borrowing-books',
+    title: 'Borrowing Books',
+    component: BorrowingBooks,
+  },
+  {
+    path: '/borrowing-detail/:id',
+    title: 'Borrowing Detail',
+    component: BorrowingDetails,
+  },
+  {
+    path: '/profile',
+    title: 'Profile',
+    component: Profile,
+  },
+  {
+    path: '/borrowing',
+    title: 'Borrowing',
+    component: Borrowing,
   },
 ];
 
 const routes = [
   ...privateRoutes,
-  ...publicRoutes,
   ...adminRoutes,
   ...authorRoutes,
   ...bookRoutes,
@@ -50,4 +67,4 @@ const routes = [
   ...shelfRoutes,
   ...stockRoutes,
 ];
-export default routes;
+export { routes, publicRoutes };

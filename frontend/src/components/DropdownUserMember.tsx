@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 
-const DropdownUser = () => {
+const DropdownUserMember = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userData, setUserData] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -18,12 +18,12 @@ const DropdownUser = () => {
   useEffect(() => {
     const fetchUser = async () => {
       if (!userId) {
-        return navigate('/admin/login');
+        return navigate('/login');
       }
 
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/admin/${userId}`
+          `http://localhost:3000/api/member/${userId}`
         );
         if (response.status === 200) {
           setUserData(response.data.payload);
@@ -40,7 +40,7 @@ const DropdownUser = () => {
   const logout = () => {
     Cookies.remove('token');
     localStorage.removeItem('user');
-    navigate('/admin/login');
+    navigate('/login');
   };
 
   return (
@@ -161,4 +161,4 @@ const DropdownUser = () => {
   );
 };
 
-export default DropdownUser;
+export default DropdownUserMember;

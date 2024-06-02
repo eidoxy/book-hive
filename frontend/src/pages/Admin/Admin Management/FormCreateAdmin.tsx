@@ -62,7 +62,7 @@ const FormCreateAdmin = () => {
   return (
     <>
       <div className="mx-auto max-w-270">
-        <Breadcrumb pageName="Form Job Vacancy" />
+        <Breadcrumb pageName="Form Create Admin" />
 
         <div className="flex justify-center items-center">
           <div className="w-1/2 2xsm:w-3/4 justify-self-center justify-center justify-items-center content-center items-center self-center rounded-sm border border-stroke bg-white shadow-card dark:border-strokedark dark:bg-boxdark">
@@ -133,7 +133,7 @@ const FormCreateAdmin = () => {
                       type="password"
                       id="password"
                       name="password"
-                      value={inputValue.email}
+                      value={inputValue.password}
                       onChange={handleInput}
                       placeholder="Password"
                       className="w-full text-black-5 rounded border-2 border-stroke bg-whiten py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-black-4 dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"

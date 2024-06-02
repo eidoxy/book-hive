@@ -63,6 +63,13 @@ const Login = (props: any) => {
         );
 
         if (response.status === 200) {
+          const data = {
+            id: response.data.payload.id,
+            name: response.data.payload.name,
+            email: response.data.payload.email,
+          };
+
+          localStorage.setItem('user', JSON.stringify(data));
           setError(null);
           return navigate('/profile');
         } else {
@@ -170,6 +177,20 @@ const Login = (props: any) => {
                 </button>
               </div>
             </form>
+
+            {props.user !== 'admin' && (
+              <div className="px-4 xl:px-25 sm:px-25 lg:px-50">
+                <span className="block text-center">
+                  Don't have an account?{' '}
+                  <Link
+                    to="/register"
+                    className="text-primary hover:underline dark:text-primarydark"
+                  >
+                    Register
+                  </Link>
+                </span>
+              </div>
+            )}
           </div>
         </div>
         <div className="hidden w-full h-full xl:block xl:w-1/2 bg-color-white bg-primary">

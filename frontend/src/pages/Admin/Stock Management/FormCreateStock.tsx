@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import Breadcrumb from '../../../components/Breadcrumb';
 import { Stock } from '../../../models/stock.model';
+import { Book } from '../../../models/book.model';
 
 const FormCreateStock = () => {
   const [books, setBooks] = useState([]);
@@ -12,7 +13,7 @@ const FormCreateStock = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<Stock>({
-    books_id: '',
+    books: '',
     quantity: '',
   });
 
@@ -40,7 +41,7 @@ const FormCreateStock = () => {
     fetchBooks();
   }, []);
 
-  const handleBookSelect = (e: any) => {
+  const handleBookSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     setSelectedBook(e.target.value);
   };
 
@@ -78,7 +79,7 @@ const FormCreateStock = () => {
   return (
     <>
       <div className="mx-auto max-w-270">
-        <Breadcrumb pageName="Form Job Vacancy" />
+        <Breadcrumb pageName="Form Create Stock" />
 
         <div className="flex justify-center items-center">
           <div className="w-1/2 2xsm:w-3/4 justify-self-center justify-center justify-items-center content-center items-center self-center rounded-sm border border-stroke bg-white shadow-card dark:border-strokedark dark:bg-boxdark">
@@ -97,20 +98,20 @@ const FormCreateStock = () => {
                   <div className="w-full">
                     <label
                       className="mb-2.5 block text-black dark:text-white"
-                      htmlFor="books_id"
+                      htmlFor="books"
                     >
                       Select Book
                     </label>
                     <select
-                      name="books_id"
-                      id="books_id"
+                      name="books"
+                      id="books"
                       onChange={handleBookSelect}
                       className="w-full text-black-5 rounded border-2 border-stroke bg-whiten py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-black-4 dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                       required
                     >
                       <option value="">Select Book</option>
                       {books &&
-                        books.map((book: any) => (
+                        books.map((book: Book) => (
                           <option key={book.id} value={book.id}>
                             {book.title}
                           </option>
@@ -118,9 +119,9 @@ const FormCreateStock = () => {
                     </select>
                     {/* <input
                       type="text"
-                      id="books_id"
-                      name="books_id"
-                      value={inputValue.books_id}
+                      id="books"
+                      name="books"
+                      value={inputValue.books}
                       onChange={handleInput}
                       placeholder="Book"
                       className="w-full text-black-5 rounded border-2 border-stroke bg-whiten py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-black-4 dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"

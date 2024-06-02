@@ -1,11 +1,74 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 import Logo from '../../images/logo/logo-no-bg.png';
 import Illustration from '../../images/illustrations/auth.svg';
 
 const Register = () => {
+  const navigate = useNavigate();
+  const [inputValue, setInputValue] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+    member_type: 'siswa',
+    major: '',
+    departement: '',
+    parent_number: '',
+  });
   const [selectedValue, setSelectedValue] = useState('siswa');
+
+  const handleInput = (e: any) => {
+    const { name, value } = e.target;
+    setInputValue((prevInput) => ({
+      ...prevInput,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (inputValue.name === '') {
+      return alert('Name is required.');
+    } else if (inputValue.email === '') {
+      return alert('Email is required.');
+    } else if (inputValue.phone === '') {
+      return alert('Phone is required.');
+    } else if (inputValue.password === '') {
+      return alert('Password is required.');
+    } else if (inputValue.member_type === '') {
+      return alert('Member type is required.');
+    } else if (inputValue.parent_number === '') {
+      return alert('Parent number is required.');
+    }
+
+    if (inputValue.member_type === 'siswa' && inputValue.major === '') {
+      return alert('Major is required.');
+    } else if (
+      inputValue.member_type === 'dosen' &&
+      inputValue.departement === ''
+    ) {
+      return alert('Departement is required.');
+    }
+
+    try {
+      const response = await axios.post(
+        'http://localhost:3000/api/register',
+        inputValue
+      );
+
+      if (response.status === 200) {
+        alert('Register success.');
+        navigate('/login');
+      } else {
+        alert('An error occurred while registering.');
+      }
+    } catch (error) {
+      alert('An error occurred while registering.');
+    }
+  };
 
   return (
     <div className="h-screen">
@@ -25,7 +88,12 @@ const Register = () => {
                 Welcome, please register to your account.
               </span>
             </div>
-            <form action="" className="px-4 xl:px-25 sm:px-25 lg:px-50">
+            <form
+              id="form-login"
+              onSubmit={handleSubmit}
+              encType="multipart/form-data"
+              className="px-4 xl:px-25 sm:px-25 lg:px-50"
+            >
               <div className="flex mb-4">
                 <div className="w-1/2 pr-2">
                   <label
@@ -36,7 +104,9 @@ const Register = () => {
                   </label>
                   <div className="relative">
                     <input
-                      value=""
+                      name="name"
+                      value={inputValue.name}
+                      onChange={handleInput}
                       type="text"
                       placeholder="Carl Johnson"
                       className="w-full rounded-full border border-stroke bg-transparent py-3 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -53,7 +123,9 @@ const Register = () => {
                   </label>
                   <div className="relative">
                     <input
-                      value=""
+                      name="email"
+                      value={inputValue.email}
+                      onChange={handleInput}
                       type="email"
                       placeholder="example@mail.com"
                       className="w-full rounded-full border border-stroke bg-transparent py-3 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -72,7 +144,9 @@ const Register = () => {
                   </label>
                   <div className="relative">
                     <input
-                      value=""
+                      name="phone"
+                      value={inputValue.phone}
+                      onChange={handleInput}
                       type="text"
                       placeholder="Enter your phone number"
                       className="w-full rounded-full border border-stroke bg-transparent py-3 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -89,7 +163,9 @@ const Register = () => {
                   </label>
                   <div className="relative">
                     <input
-                      value=""
+                      name="password"
+                      value={inputValue.password}
+                      onChange={handleInput}
                       type="password"
                       placeholder="Enter your password"
                       className="w-full rounded-full border border-stroke bg-transparent py-3 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -165,9 +241,10 @@ const Register = () => {
                       </label>
                       <div className="relative">
                         <input
-                          value=""
-                          type="text"
                           name="major"
+                          value={inputValue.major}
+                          onChange={handleInput}
+                          type="text"
                           placeholder="What is your major?"
                           className="w-full rounded-full border border-stroke bg-transparent py-3 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                           required
@@ -186,9 +263,10 @@ const Register = () => {
                       </label>
                       <div className="relative">
                         <input
-                          value=""
-                          type="text"
                           name="departement"
+                          value={inputValue.departement}
+                          onChange={handleInput}
+                          type="text"
                           placeholder="What is your departement?"
                           className="w-full rounded-full border border-stroke bg-transparent py-3 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                           required
@@ -206,7 +284,9 @@ const Register = () => {
                   </label>
                   <div className="relative">
                     <input
-                      value=""
+                      name="parent_number"
+                      value={inputValue.parent_number}
+                      onChange={handleInput}
                       type="text"
                       placeholder="Enter your parent number"
                       className="w-full rounded-full border border-stroke bg-transparent py-3 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -241,9 +321,9 @@ const Register = () => {
               className="flex items-center justify-center mb-5.5"
               to="/"
             >
-              <img className="w-20 dark:block" src={Logo} alt="Logo" />
-              <h1 className="text-white font-bold text-4xl ml-5">
-                Cak Takim
+              <h1 className="text-white font-extrabold text-4xl">
+                <span className="text-white">BOOK</span>
+                <span className="text-secondary">HIVE</span>
               </h1>
             </Link>
 

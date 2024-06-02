@@ -13,7 +13,9 @@ const FormCreateAuthor = () => {
     description: '',
   });
 
-  const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleInput = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setInputValue((prevInput) => ({
       ...prevInput,
@@ -54,7 +56,7 @@ const FormCreateAuthor = () => {
   return (
     <>
       <div className="mx-auto max-w-270">
-        <Breadcrumb pageName="Form Job Vacancy" />
+        <Breadcrumb pageName="Form Create Author" />
 
         <div className="flex justify-center items-center">
           <div className="w-1/2 2xsm:w-3/4 justify-self-center justify-center justify-items-center content-center items-center self-center rounded-sm border border-stroke bg-white shadow-card dark:border-strokedark dark:bg-boxdark">
@@ -99,8 +101,7 @@ const FormCreateAuthor = () => {
                     >
                       Description
                     </label>
-                    <input
-                      type="text"
+                    <textarea
                       id="description"
                       name="description"
                       value={inputValue.description}

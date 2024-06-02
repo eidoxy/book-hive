@@ -6,11 +6,15 @@ import Cookies from 'js-cookie';
 import HomePage from './pages/HomePage';
 import Login from './pages/Authentication/Login';
 import Register from './pages/Authentication/Register';
-import AdminLogin from './pages/Authentication/Admin/Login';
 import Loader from './common/Loader';
-import routes from './routes';
+import { routes, publicRoutes } from './routes';
 
 const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
+const DefaultLayoutMember = lazy(
+  () => import('./layout/DefaultLayoutMember')
+);
+const AllBooks = lazy(() => import('./pages/AllBooks'));
+const BooksDetail = lazy(() => import('./pages/BooksDetail'));
 
 interface ProtectedRoutesProps {
   children?: ReactNode;
@@ -46,6 +50,25 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route index element={<HomePage />} />
+        <Route path="/all-books" element={<AllBooks />} />
+        <Route path="/books-detail/:id" element={<BooksDetail />} />
+
+        <Route element={<DefaultLayoutMember />}>
+          {publicRoutes.map((routes, index) => {
+            const { path, component: Component } = routes;
+            return (
+              <Route
+                key={index}
+                path={path}
+                element={
+                  <Suspense fallback={<Loader />}>
+                    <Component />
+                  </Suspense>
+                }
+              />
+            );
+          })}
+        </Route>
         {/* End Public Routes */}
 
         {/* Admin Routes */}
