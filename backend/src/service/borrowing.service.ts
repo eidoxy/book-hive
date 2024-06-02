@@ -109,6 +109,62 @@ export async function getBorrowingById(id: number) {
   }
 }
 
+export async function getBorrowingByMemberId(memberId: number) {
+  const db = await getConnection();
+
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    const [result] = await db.query<BorrowingQueryResult[]>(
+      `
+      SELECT
+        b.title,
+        b.cover,
+        a.name AS author,
+        st.quantity AS stock,
+        sh.name AS shelf,
+        br.borrow_date,
+        br.return_date,
+        br.status
+      FROM
+        borrowings br
+        JOIN books_detail bd ON br.books_detail_id = bd.id
+        JOIN books b ON bd.books_id = b.id
+        JOIN authors a ON bd.authors_id = a.id
+        JOIN stocks st ON b.id = st.books_id
+        JOIN shelves sh ON b.shelves_id = sh.id
+      WHERE
+        br.members_id = ?
+      `,
+      [memberId]
+    );
+
+    // ? : check if there are no borrowings
+    if (result.length === 0) {
+      return {
+        status: 404,
+        message: 'No borrowings found',
+      };
+    }
+
+    // ! : return the fetched borrowings
+    return {
+      status: 200,
+      message: 'Borrowings fetched successfully!',
+      payload: result,
+    };
+  } catch (error) {
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
+  }
+}
+
 export async function getBorrowingsLate() {
   const db = await getConnection();
 
@@ -168,6 +224,42 @@ export async function createBorrowing(borrowing: Borrowing) {
   if (!db) throw new Error('Cannot connect to database');
 
   try {
+    await db.beginTransaction();
+
+    const [resultStock] = await db.query<BorrowingQueryResult[]>(
+      `
+        SELECT
+          st.quantity
+        FROM
+          stocks st
+        JOIN
+          books_detail bd ON st.books_id = bd.books_id
+        WHERE
+          bd.id = ?
+      `,
+      [borrowing.books_detail_id]
+    );
+
+    const currentStock = resultStock[0].quantity;
+
+    // ? : check if the stock is not enough
+    if (currentStock <= 0) {
+      throw new Error('Book is out of stock');
+    }
+
+    // ! : get the book id from the books_detail_id
+    const [bookDetailResult] = await db.query<BorrowingQueryResult[]>(
+      `SELECT books_id FROM books_detail WHERE id = ?`,
+      [borrowing.books_detail_id]
+    );
+    const bookId = bookDetailResult[0].books_id;
+
+    // ! : update stock quantity
+    await db.query<ResultSetHeader>(
+      `UPDATE stocks SET quantity = quantity - 1 WHERE books_id = ?`,
+      [bookId]
+    );
+
     const [result] = await db.query<ResultSetHeader>(
       `
         INSERT INTO borrowings (
@@ -175,30 +267,34 @@ export async function createBorrowing(borrowing: Borrowing) {
           books_detail_id,
           admins_id,
           borrow_date,
-          return_date,
           status
         )
-        VALUES (?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, NOW(), 'borrowed')
       `,
       [
         borrowing.members_id,
         borrowing.books_detail_id,
         borrowing.admins_id,
-        borrowing.borrow_date,
-        borrowing.return_date,
-        borrowing.status,
       ]
     );
+
+    await db.commit();
 
     // ! : return the created borrowing
     return {
       status: 201,
-      message: 'Borrowing created successfully!',
+      message: 'Book borrowed successfully!',
       payload: {
-        ...borrowing,
+        id: result.insertId,
+        members: borrowing.members_id,
+        books_detail: borrowing.books_detail_id,
+        admins: borrowing.admins_id,
+        borrow_date: new Date(),
+        status: 'borrowed',
       },
     };
   } catch (error) {
+    await db.rollback();
     console.error('Database query error:', error);
     return {
       status: 500,
@@ -209,10 +305,67 @@ export async function createBorrowing(borrowing: Borrowing) {
   }
 }
 
-export async function updateBorrowing(
-  id: number,
-  borrowing: Borrowing
-) {
+export async function returnBorrowing(id: number) {
+  const db = await getConnection();
+
+  // ? : check if the database connection is successful
+  if (!db) throw new Error('Cannot connect to database');
+
+  try {
+    await db.beginTransaction();
+
+    const [borrowingResult] = await db.query<BorrowingQueryResult[]>(
+      `SELECT books_detail_id FROM borrowings WHERE id = ?`,
+      [id]
+    );
+    const booksDetailId = borrowingResult[0].books_detail_id;
+
+    await db.query<ResultSetHeader>(
+      `
+        UPDATE borrowings SET
+        status = 'returned',
+        return_date = NOW()
+        WHERE id = ?
+      `,
+      [id]
+    );
+
+    // ! : update stock quantity
+    await db.query(
+      `
+        UPDATE stocks SET
+        quantity = quantity + 1
+        WHERE books_id = ?
+      `,
+      [id]
+    );
+
+    await db.commit();
+
+    // ! : return the updated borrowing
+    return {
+      status: 200,
+      message: 'Book returned successfully!',
+      payload: {
+        id,
+        books_detail_id: booksDetailId,
+        return_date: new Date(),
+        status: 'returned',
+      },
+    };
+  } catch (error) {
+    await db.rollback();
+    console.error('Database query error:', error);
+    return {
+      status: 500,
+      message: 'Internal server error',
+    };
+  } finally {
+    await db.end();
+  }
+}
+
+export async function updateBorrowing(id: number, borrowing: Borrowing) {
   const db = await getConnection();
 
   // ? : check if the database connection is successful

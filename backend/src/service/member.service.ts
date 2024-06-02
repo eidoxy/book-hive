@@ -187,17 +187,7 @@ export async function getMembers() {
     return {
       status: 200,
       message: 'Members fetched successfully',
-      payload: {
-        id: rows[0].id,
-        name: rows[0].name,
-        email: rows[0].email,
-        member_type: rows[0].member_type,
-        parent_number: rows[0].parent_number,
-        phone: rows[0].phone,
-        address: rows[0].address,
-        major: rows[0].major,
-        department: rows[0].department,
-      },
+      payload: rows.map(({ password, ...rest }) => rest),
     };
   } catch (error) {
     console.error('Database query error:', error);

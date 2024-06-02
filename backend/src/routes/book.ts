@@ -7,7 +7,10 @@ import { authenticateUser } from '../middleware/authenticateUser';
 import {
   getBooksController,
   getBookByIdController,
+  getBookListController,
   getBookRecomendationController,
+  getBookPopularController,
+  getBookByCategoryController,
   createBookController,
   updateBookController,
   deleteBookController,
@@ -19,7 +22,10 @@ const upload = multer({ storage });
 
 publicRoutes
   .get('/', getBooksController)
+  .get('/list', getBookListController)
   .get('/recommendation', getBookRecomendationController)
+  .get('/popular', getBookPopularController)
+  .get('/category/:id', getBookByCategoryController)
   .get('/:id', getBookByIdController);
 
 protectedRoutes

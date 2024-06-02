@@ -17,13 +17,7 @@ export async function getBookDetails() {
       `
         SELECT 
         bd.id,
-        b.id AS book_id,
         b.title, 
-        b.cover, 
-        b.description, 
-        c.name AS category, 
-        s.name AS shelf, 
-        b.total_page, 
         a.name AS author, 
         p.name AS publisher, 
         bd.published_date, 
@@ -32,8 +26,6 @@ export async function getBookDetails() {
         bd.updated_at 
         FROM books_detail bd
         JOIN books b ON bd.books_id = b.id
-        JOIN categories c ON b.categories_id = c.id
-        JOIN shelves s ON b.shelves_id = s.id
         JOIN authors a ON bd.authors_id = a.id
         JOIN publishers p ON bd.publishers_id = p.id
       `
@@ -75,7 +67,6 @@ export async function getBookDetailById(id: number) {
       `
         SELECT 
         bd.id,
-        b.id AS book_id,
         b.title, 
         b.cover, 
         b.description, 
@@ -136,7 +127,7 @@ export async function createBookDetail(bodyRequest: BookDetail) {
           authors_id,
           publishers_id,
           published_date,
-          isbn,
+          isbn
         ) 
         VALUES (?, ?, ?, ?, ?)`,
       [

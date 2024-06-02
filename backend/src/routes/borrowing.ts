@@ -5,8 +5,10 @@ import { authenticateUser } from '../middleware/authenticateUser';
 import {
   getBorrowingsController,
   getBorrowingByIdController,
+  getBorrowingsByMemberController,
   getBorrowingsLateController,
   createBorrowingController,
+  returnBorrowingController,
   updateBorrowingController,
   deleteBorrowingController,
 } from '../controllers/borrowing.controller';
@@ -16,13 +18,15 @@ const protectedRoutes = Router();
 
 publicRoutes
   .get('/', getBorrowingsController)
+  .get('/late', getBorrowingsLateController)
+  .get('/member/:id', getBorrowingsByMemberController)
   .get('/:id', getBorrowingByIdController);
 
 protectedRoutes
   .use(authenticateToken, authenticateUser)
-  .get('/late-borrowing', getBorrowingsLateController)
   .post('/create', createBorrowingController)
   .put('/update/:id', updateBorrowingController)
+  .put('/return/:id', returnBorrowingController)
   .delete('/delete/:id', deleteBorrowingController);
 
 const borrowingRoutes = Router();

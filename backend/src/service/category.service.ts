@@ -1,7 +1,4 @@
-import {
-  Category,
-  CategoryQueryResult,
-} from '../models/category.model';
+import { Category, CategoryQueryResult } from '../models/category.model';
 
 import getConnection from '../database';
 import { ResultSetHeader } from 'mysql2';
@@ -28,7 +25,7 @@ export async function getCategories() {
     // ! : return the fetched categories
     return {
       status: 200,
-      massage: 'Caegoires fetched successfully!',
+      message: 'Categories fetched successfully!',
       payload: rows,
     };
   } catch (error) {
@@ -114,10 +111,7 @@ export async function createCategory(bodyRequest: Category) {
       },
     };
   } catch (error) {
-    console.error(
-      'An error occurred while creating a category: ',
-      error
-    );
+    console.error('An error occurred while creating a category: ', error);
     return {
       status: 500,
       message: 'Failed to create category',
@@ -127,10 +121,7 @@ export async function createCategory(bodyRequest: Category) {
   }
 }
 
-export async function updateCategory(
-  id: number,
-  bodyRequest: Category
-) {
+export async function updateCategory(id: number, bodyRequest: Category) {
   const db = await getConnection();
 
   // ? : check if the database connection is successful
@@ -169,10 +160,7 @@ export async function updateCategory(
       },
     };
   } catch (error) {
-    console.error(
-      'An error occurred while updating a category: ',
-      error
-    );
+    console.error('An error occurred while updating a category: ', error);
     return {
       status: 500,
       message: 'Failed to update category',
@@ -213,10 +201,7 @@ export async function deleteCategory(id: number) {
       message: `Category with id ${id} deleted successfully!`,
     };
   } catch (error) {
-    console.error(
-      'An error occurred while deleting a category: ',
-      error
-    );
+    console.error('An error occurred while deleting a category: ', error);
     return {
       status: 500,
       message: 'Failed to delete category',
