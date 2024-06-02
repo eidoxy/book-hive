@@ -5,10 +5,10 @@ enum Status {
 }
 export interface Borrowing {
   id?: number;
-  members_id: number;
-  books_detail_id: number;
-  admins_id: number;
-  borrow_date: Date;
-  return_date: Date;
+  member: number;
+  book: number;
+  admin: number;
+  borrow_date: string;
+  return_date: string;
   status: Status;
 }

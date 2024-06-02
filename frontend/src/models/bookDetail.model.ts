@@ -3,6 +3,6 @@ export interface BookDetail {
   title: string;
   author: string;
   publisher: string;
-  published_date: Date;
+  published_date: string;
   isbn: string;
 }
