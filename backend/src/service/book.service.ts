@@ -330,6 +330,8 @@ export async function createBook(
 ) {
   const db = await getConnection();
   const path = 'images/' + file ? file.filename : null;
+  const total_page = bodyRequest.total_page;
+  const totalPageInt = parseInt(total_page.toString(), 10);
 
   // ? : check if the database connection is successful
   if (!db) throw new Error('Cannot connect to database');
@@ -353,7 +355,7 @@ export async function createBook(
         bodyRequest.description,
         bodyRequest.categories_id,
         bodyRequest.shelves_id,
-        bodyRequest.pages,
+        totalPageInt,
       ]
     );
 
@@ -421,7 +423,7 @@ export async function updateBook(id: number, bodyRequest: Book) {
         bodyRequest.description,
         bodyRequest.categories_id,
         bodyRequest.shelves_id,
-        bodyRequest.pages,
+        bodyRequest.total_page,
         id,
       ]
     );

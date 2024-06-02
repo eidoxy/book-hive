@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-import Loader from '../common/Loader';
-
 import img_globeAndBook from '../images/illustrations/Globe and Book.svg';
 import img_recom from '../images/illustrations/Our Recommendation.svg';
 import img_mail from '../images/illustrations/mail.svg';
@@ -16,7 +14,12 @@ const HomePage = () => {
   const [recommendationBooks, setRecommendationBooks] = useState<Book[]>(
     []
   );
+  const [updatedRecommedationBooks, setUpdatedRecommedationBooks] =
+    useState<Book[]>([]);
   const [popularBooks, setPopularBooks] = useState<Book[]>([]);
+  const [updatedPopularBooks, setUpdatedPopularBooks] = useState<Book[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,6 +46,21 @@ const HomePage = () => {
 
     fetchBooks();
   }, []);
+
+  useEffect(() => {
+    const updatedRecommedationData = recommendationBooks.map(
+      (item: Book) => ({
+        ...item,
+        cover: 'http://localhost:3000/images/' + item.cover,
+      })
+    );
+    const updatedPopularData = popularBooks.map((item: Book) => ({
+      ...item,
+      cover: 'http://localhost:3000/images/' + item.cover,
+    }));
+    setUpdatedRecommedationBooks(updatedRecommedationData);
+    setUpdatedPopularBooks(updatedPopularData);
+  }, [recommendationBooks, popularBooks]);
 
   return (
     <>
@@ -187,51 +205,55 @@ const HomePage = () => {
             </div>
             {/*Card1*/}
             {loading ? (
-              <Loader />
+              <div className="flex h-screen items-center justify-center bg-bodybg dark:bg-boxdark">
+                <div className="h-16 w-16 animate-spin rounded-full border-4 border-solid border-primary border-t-transparent"></div>
+              </div>
             ) : (
               <>
-                {recommendationBooks.map((_items: Book, id: number) => (
-                  <div
-                    key={id}
-                    className="ml-24 mr-2 w-56 h-auto rounded-lg shadow border border-neutral-600/opacity-25 flex-col justify-center items-center inline-flex"
-                  >
-                    <ul>
-                      <li>
-                        <img
-                          src={_items.cover}
-                          alt={`Cover for Book${_items.title}`}
-                          className="w-full h-40 rounded-lg text-center"
-                        />
-                      </li>
-                      <li>
-                        <div className="w-48 h-28 flex-col justify-center items-center gap-1 inline-flex">
-                          <div className="self-stretch text-center text-body text-xl font-normal font-['Roboto']">
-                            {_items.author}
+                {updatedRecommedationBooks.map(
+                  (_items: Book, id: number) => (
+                    <div
+                      key={id}
+                      className="ml-24 mr-2 w-56 h-auto rounded-lg shadow border border-neutral-600/opacity-25 flex-col justify-center items-center inline-flex"
+                    >
+                      <ul>
+                        <li>
+                          <img
+                            src={_items.cover}
+                            alt={`Cover for Book${_items.title}`}
+                            className="rounded-lg text-center"
+                          />
+                        </li>
+                        <li>
+                          <div className="w-full h-28 flex-col justify-center items-center gap-1 inline-flex">
+                            <div className="self-stretch text-center text-body text-xl font-normal font-['Roboto']">
+                              {_items.author}
+                            </div>
+                            <div className="mb-4 self-stretch text-center text-textbody  text-3xl font-normal font-['Roboto']">
+                              {_items.title}
+                            </div>
                           </div>
-                          <div className="mb-4 self-stretch text-center text-textbody  text-3xl font-normal font-['Roboto']">
-                            {_items.title}
+                        </li>
+                        <li>
+                          <div className="w-full h-6 justify-between items-center inline-flex">
+                            <a
+                              href="#"
+                              className="text-textbody  text-xl font-normal  hover:text-body font-['Roboto']"
+                            >
+                              Stock {_items.stock}
+                            </a>
+                            <a
+                              href="#"
+                              className="text-right text-textbody  text-xl hover:text-body font-normal font-['Roboto']"
+                            >
+                              {_items.shelf}
+                            </a>
                           </div>
-                        </div>
-                      </li>
-                      <li>
-                        <div className="w-48 h-6 justify-between items-center inline-flex">
-                          <a
-                            href="#"
-                            className="text-textbody  text-xl font-normal  hover:text-body font-['Roboto']"
-                          >
-                            {_items.stock}
-                          </a>
-                          <a
-                            href="#"
-                            className="text-right text-textbody  text-xl hover:text-body font-normal font-['Roboto']"
-                          >
-                            {_items.shelf}
-                          </a>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                ))}
+                        </li>
+                      </ul>
+                    </div>
+                  )
+                )}
               </>
             )}
           </main>
@@ -301,10 +323,12 @@ const HomePage = () => {
               </div>
             </div>
             {loading ? (
-              <Loader />
+              <div className="flex h-screen items-center justify-center bg-bodybg dark:bg-boxdark">
+                <div className="h-16 w-16 animate-spin rounded-full border-4 border-solid border-primary border-t-transparent"></div>
+              </div>
             ) : (
               <>
-                {popularBooks.map((_items: Book, id: number) => (
+                {updatedPopularBooks.map((_items: Book, id: number) => (
                   <div
                     key={id}
                     className="ml-24 mr-2 w-56 h-auto rounded-lg shadow border border-neutral-600/opacity-25 flex-col justify-center items-center inline-flex "
@@ -314,11 +338,11 @@ const HomePage = () => {
                         <img
                           src={_items.cover}
                           alt={`Cover for Book${_items.title}`}
-                          className="w-full h-40 rounded-lg text-center"
+                          className="rounded-lg text-center"
                         />
                       </li>
                       <li>
-                        <div className="w-48 h-28 flex-col justify-center items-center gap-1 inline-flex">
+                        <div className="w-full h-28 flex-col justify-center items-center gap-1 inline-flex">
                           <div className="self-stretch text-center text-body text-xl font-normal font-['Roboto']">
                             {_items.author}
                           </div>
@@ -328,12 +352,12 @@ const HomePage = () => {
                         </div>
                       </li>
                       <li>
-                        <div className="w-48 h-6 justify-between items-center inline-flex">
+                        <div className="w-full h-6 justify-between items-center inline-flex">
                           <a
                             href="#"
                             className="text-textbody text-xl font-normal  hover:text-body font-['Roboto']"
                           >
-                            {_items.borrow_count}
+                            {_items.borrow_count} Borrowed
                           </a>
                           <a
                             href="#"

@@ -264,22 +264,45 @@ const AllBooks = () => {
 
           <div className="flex justify-between p-14">
             {updateBooks.map((book: Book, id: number) => (
-              <div key={id} className="w-56 rounded-lg border-2 h-auto">
-                <div className="p">
-                  <img src={book.cover} />
-                </div>
-                <div>
-                  <p className="flex justify-center pb-3 text-body">
-                    {book.author}
-                  </p>
-                  <p className="font-serif flex justify-center text-2xl text-textbody">
-                    {book.title}
-                  </p>
-                  <div className="flex justify-between p-4 ">
-                    <p className="r text-textbody">{book.stock}</p>
-                    <p className="text-textbody">{book.shelf}</p>
-                  </div>
-                </div>
+              <div
+                key={id}
+                className="ml-24 mr-2 w-56 h-auto rounded-lg shadow border border-neutral-600/opacity-25 flex-col justify-center items-center inline-flex"
+              >
+                <ul>
+                  <li>
+                    <img
+                      src={book.cover}
+                      alt={`Cover for Book${book.title}`}
+                      className="rounded-lg text-center"
+                    />
+                  </li>
+                  <li>
+                    <div className="w-full h-28 flex-col justify-center items-center gap-1 inline-flex">
+                      <div className="self-stretch text-center text-body text-xl font-normal font-['Roboto']">
+                        {book.author}
+                      </div>
+                      <div className="mb-4 self-stretch text-center text-textbody  text-3xl font-normal font-['Roboto']">
+                        {book.title}
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="w-full h-6 justify-between items-center inline-flex">
+                      <a
+                        href="#"
+                        className="text-textbody  text-xl font-normal  hover:text-body font-['Roboto']"
+                      >
+                        Stock {book.stock}
+                      </a>
+                      <a
+                        href="#"
+                        className="text-right text-textbody  text-xl hover:text-body font-normal font-['Roboto']"
+                      >
+                        {book.shelf}
+                      </a>
+                    </div>
+                  </li>
+                </ul>
               </div>
             ))}
           </div>

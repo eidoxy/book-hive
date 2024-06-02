@@ -87,11 +87,6 @@ const Login = (props: any) => {
         <div className="w-full xl:w-1/2">
           <div className="w-full p-10.5 sm:px-2 xl:px-5">
             <div className="px-4 xl:px-25 sm:px-25 lg:px-50">
-              <img
-                className="w-12 xl:hidden dark:block mb-4"
-                src={Logo}
-                alt="Logo"
-              />
               <h2 className="mb-1.5 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
                 {props.user === 'admin' && 'Login Admin'}
                 {props.user !== 'admin' && 'Login'}
