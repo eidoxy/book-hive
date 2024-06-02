@@ -83,9 +83,6 @@ export async function getBorrowingsByMemberController(
 ) {
   const memberId = Number(req.params.id);
 
-  console.log(memberId);
-  console.log(typeof memberId);
-
   // ? : check if memberId is not a number
   if (isNaN(memberId)) {
     return res.status(400).send({
